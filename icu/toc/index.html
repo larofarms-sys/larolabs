@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v6 grey-green dots -->
+<!-- v18 polling-fix -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -13731,7 +13731,17 @@ async function initAuth() {
     await loadAllProgress();
     await loadAllQCC();
     updateTOCIndicators();
+    updateProgressCounter();
     subscribeRealtime();
+    // Poll every 10 seconds to catch educator resets
+    if (currentProfile.role === 'student') {
+      setInterval(async () => {
+        await loadAllProgress();
+        updateTOCIndicators();
+        updateProgressCounter();
+        if (currentTopic && document.getElementById('interaction-panel')) await renderInteractionState(currentTopic);
+      }, 10000);
+    }
     hideLoginOverlay();
     updateUserBar();
   } else {
@@ -13841,7 +13851,10 @@ function updateTOCIndicators() {
   const categoriesWithUnread = new Set();
 
   document.querySelectorAll('.sub-item').forEach(item => {
-    const topicName = item.querySelector('.sub-name').textContent.trim();
+    // Use onclick attribute to get the true topic name (matches database)
+    const onclickAttr = item.getAttribute('onclick') || '';
+    const match = onclickAttr.match(/openTopic\('([^']+)'/);
+    const topicName = match ? match[1] : item.querySelector('.sub-name').textContent.trim();
     item.querySelectorAll('.toc-qcc-dot').forEach(el => el.remove());
 
     const subDot = item.querySelector('.sub-dot');
@@ -13852,13 +13865,36 @@ function updateTOCIndicators() {
       if (subDot) {
         subDot.style.background = (prog && !prog.undone_by_educator) ? '#34d399' : '#2e4a65';
       }
-    } else if (currentProfile.role === 'educator') {
-      const anyComplete = Object.keys(progressMap).some(key =>
+    } else if (currentProfile.role === 'educator' || currentProfile.role === 'admin') {
+      // Find completed progress record for this topic
+      const progKey = Object.keys(progressMap).find(key =>
         key.split('|')[1] === topicName && progressMap[key] && !progressMap[key].undone_by_educator
       );
+      const isComplete = !!progKey;
+
       if (subDot) {
-        subDot.style.background = anyComplete ? '#34d399' : '#2e4a65';
+        subDot.style.background = isComplete ? '#34d399' : '#2e4a65';
+
+        // Remove any existing click handler by cloning
+        const newDot = subDot.cloneNode(true);
+        subDot.parentNode.replaceChild(newDot, subDot);
+
+        if (isComplete) {
+          const prog = progressMap[progKey];
+          newDot.style.cursor = 'pointer';
+          newDot.title = 'Click to reset — student will need to re-read and mark complete again';
+          newDot.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            if (confirm('Reset this topic? The student will need to re-read and mark it complete again.')) {
+              await undoComplete(prog.id, topicName);
+            }
+          });
+        } else {
+          newDot.style.cursor = 'default';
+          newDot.title = '';
+        }
       }
+
       const hasUnread = Object.keys(qccMap).some(key => key.split('|')[1] === topicName && qccMap[key].some(q => !q.read_by_educator));
       if (hasUnread) {
         const dot = document.createElement('span');
@@ -13871,7 +13907,7 @@ function updateTOCIndicators() {
     }
   });
 
-  if (currentProfile.role === 'educator') {
+  if (currentProfile.role === 'educator' || currentProfile.role === 'admin') {
     categoriesWithUnread.forEach(catEl => {
       const nameEl = catEl.querySelector('.cat-name');
       const alert = document.createElement('span');
@@ -13974,14 +14010,14 @@ async function openTopic(name, category, icon) {
   currentCategory = category;
 
   const content = contentMap[name];
-  const htmlContent = content
-    ? content + buildInteractionPanel(name, category)
+  const htmlContent = (content
+    ? content
     : `<div class="coming-soon">
         <div class="cs-icon">${icon}</div>
         <h3>${name}</h3>
         <p>This section is being built by your educator. Check back soon.</p>
         <div class="cs-badge">COMING SOON</div>
-      </div>`;
+      </div>`) + buildInteractionPanel(name, category);
 
   const isDesktop = window.innerWidth >= 900;
 
@@ -13990,6 +14026,7 @@ async function openTopic(name, category, icon) {
     document.getElementById('desktop-content-title').textContent = name;
     document.getElementById('desktop-content-cat').textContent = category;
     document.getElementById('desktop-content-body').innerHTML = htmlContent;
+    updateUserBar();
 
     // Show topic view, hide others
     document.getElementById('content-welcome').style.display = 'none';
@@ -14011,7 +14048,7 @@ async function openTopic(name, category, icon) {
   }
 
   if (content) await renderInteractionState(name);
-  if (currentProfile?.role === 'educator') markQCCRead(name);
+  if (currentProfile?.role === 'educator' || currentProfile?.role === 'admin') markQCCRead(name);
 }
 
 function closeDesktopPanel() {
@@ -14041,7 +14078,7 @@ function buildInteractionPanel(name, category) {
         </div>
       </div>
     </div>`;
-  } else if (role === 'educator') {
+  } else if (role === 'educator' || role === 'admin') {
     return `
     <div id="interaction-panel" style="margin-top:20px;border-top:1px solid #192d45;padding-top:20px;display:flex;flex-direction:column;gap:14px">
       <div style="background:#0c1523;border:1px solid #192d45;border-radius:10px;padding:16px">
@@ -14075,9 +14112,14 @@ async function renderInteractionState(name) {
     const key = currentProfile.id + '|' + name;
     const prog = progressMap[key];
     const btn = document.getElementById('complete-btn');
-    if (btn && prog && !prog.undone_by_educator) {
-      btn.style.background = '#065f46'; btn.style.color = '#34d399'; btn.style.cursor = 'default'; btn.disabled = true;
-      btn.innerHTML = '<span>✓ Completed</span>';
+    if (btn) {
+      if (prog && !prog.undone_by_educator) {
+        btn.style.background = '#065f46'; btn.style.color = '#34d399'; btn.style.cursor = 'default'; btn.disabled = true;
+        btn.innerHTML = '<span>✓ Completed</span>';
+      } else {
+        btn.style.background = '#34d399'; btn.style.color = '#060b14'; btn.style.cursor = 'pointer'; btn.disabled = false;
+        btn.innerHTML = '<span id="complete-btn-inner">✓ Mark as Complete</span>';
+      }
     }
     const qccEl = document.getElementById('qcc-history');
     if (qccEl) {
@@ -14096,7 +14138,7 @@ async function renderInteractionState(name) {
           </div>`).join('');
       }
     }
-  } else if (role === 'educator') {
+  } else if (role === 'educator' || role === 'admin') {
     const progEl = document.getElementById('student-progress-list');
     if (progEl) {
       const myStudents = await getMyStudents();
@@ -14169,7 +14211,7 @@ async function handleComplete() {
     headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
     body: JSON.stringify({ student_id: currentProfile.id, educator_id: currentProfile.educator_id, topic_name: currentTopic, category: currentCategory })
   });
-  if (res.ok) { const rows = await res.json(); progressMap[key] = rows[0]; await renderInteractionState(currentTopic); updateTOCIndicators(); }
+  if (res.ok) { const rows = await res.json(); progressMap[key] = rows[0]; await renderInteractionState(currentTopic); updateTOCIndicators(); updateProgressCounter(); }
 }
 
 async function submitQCC() {
@@ -14189,11 +14231,15 @@ async function submitQCC() {
 async function undoComplete(progressId, topicName) {
   const token = await getToken();
   const res = await fetch(`${SUPABASE_URL}/rest/v1/topic_progress?id=eq.${progressId}`, {
-    method: 'PATCH',
-    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ undone_by_educator: true, undone_at: new Date().toISOString() })
+    method: 'DELETE',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + token }
   });
-  if (res.ok) { Object.keys(progressMap).forEach(k => { if (progressMap[k].id === progressId) progressMap[k].undone_by_educator = true; }); await renderInteractionState(topicName); updateTOCIndicators(); }
+  if (res.ok) {
+    Object.keys(progressMap).forEach(k => { if (progressMap[k] && progressMap[k].id === progressId) delete progressMap[k]; });
+    await renderInteractionState(topicName);
+    updateTOCIndicators();
+    updateProgressCounter();
+  }
 }
 
 async function submitEducatorReply() {
@@ -14226,9 +14272,18 @@ async function markQCCRead(topicName) {
 
 function subscribeRealtime() {
   if (realtimeSub) sb.removeChannel(realtimeSub);
-  realtimeSub = sb.channel('toc-live')
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'topic_progress' }, async () => { await loadAllProgress(); updateTOCIndicators(); if (currentTopic && document.getElementById('interaction-panel')) await renderInteractionState(currentTopic); })
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'topic_qcc' }, async () => { await loadAllQCC(); updateTOCIndicators(); if (currentTopic && document.getElementById('interaction-panel')) await renderInteractionState(currentTopic); })
+  realtimeSub = sb.channel('toc-live-' + currentProfile.id)
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'topic_progress' }, async () => {
+      await loadAllProgress();
+      updateTOCIndicators();
+      updateProgressCounter();
+      if (currentTopic && document.getElementById('interaction-panel')) await renderInteractionState(currentTopic);
+    })
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'topic_qcc' }, async () => {
+      await loadAllQCC();
+      updateTOCIndicators();
+      if (currentTopic && document.getElementById('interaction-panel')) await renderInteractionState(currentTopic);
+    })
     .subscribe();
 }
 
@@ -14288,9 +14343,13 @@ searchInput.addEventListener('input', function() {
 
 // ── PROGRESS COUNTER ──
 function updateProgressCounter() {
-  const done = document.querySelectorAll('.status-done').length;
   const total = document.querySelectorAll('.sub-item').length;
-  document.getElementById('progress-text').textContent = done + ' / ' + total + ' complete';
+  let done = 0;
+  if (currentProfile && currentProfile.role === 'student') {
+    done = Object.values(progressMap).filter(p => p && p.student_id === currentProfile.id && !p.undone_by_educator).length;
+  }
+  const el = document.getElementById('progress-text');
+  if (el) el.textContent = done + ' / ' + total + ' complete';
 }
 updateProgressCounter();
 
