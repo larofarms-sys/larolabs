@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Laro Labs — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy: #080f1e; --navy2: #0d1829; --navy3: #132035;
+  --blue: #1a6ef5; --blue2: #2d85ff;
+  --white: #f8faff; --muted: #8a9bb5;
+  --border: rgba(255,255,255,0.08);
+  --green: #34d399; --red: #f87171; --amber: #fb923c;
+}
+body { background: var(--navy); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+
+/* ── AUTH SCREEN ── */
+#auth-screen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: var(--navy);
+}
+.auth-box {
+  width: 100%; max-width: 400px; padding: 48px;
+  background: var(--navy2); border: 1px solid var(--border); border-radius: 16px;
+}
+.auth-logo {
+  font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.12em;
+  margin-bottom: 8px;
+}
+.auth-logo span { color: var(--blue2); }
+.auth-sub { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 36px; }
+.auth-label { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; display: block; }
+.auth-input {
+  width: 100%; background: var(--navy3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 12px 16px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 14px;
+  outline: none; margin-bottom: 16px; transition: border-color 0.2s;
+}
+.auth-input:focus { border-color: var(--blue); }
+.auth-btn {
+  width: 100%; background: var(--blue); color: var(--white); border: none; border-radius: 8px;
+  padding: 13px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.2s; margin-top: 8px;
+}
+.auth-btn:hover { background: var(--blue2); }
+.auth-error { color: var(--red); font-size: 12px; margin-top: 8px; display: none; }
+.auth-link { color: var(--blue2); font-size: 12px; cursor: pointer; text-decoration: underline; margin-top: 12px; display: inline-block; }
+
+/* ── APP LAYOUT ── */
+#app { display: none; min-height: 100vh; }
+
+/* Topbar */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: 60px;
+  background: rgba(8,15,30,0.95); border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(20px);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 32px;
+}
+.topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.12em; }
+.topbar-logo span { color: var(--blue2); }
+.topbar-badge {
+  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em;
+  color: var(--blue2); background: rgba(26,110,245,0.1); border: 1px solid rgba(26,110,245,0.2);
+  padding: 4px 10px; border-radius: 20px; text-transform: uppercase;
+}
+.topbar-right { display: flex; align-items: center; gap: 16px; }
+.topbar-user { font-size: 12px; color: var(--muted); }
+.logout-btn {
+  background: transparent; border: 1px solid var(--border); border-radius: 6px;
+  padding: 6px 12px; color: var(--muted); font-size: 12px; cursor: pointer;
+  transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+}
+.logout-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+
+/* Sidebar */
+.layout { display: flex; padding-top: 60px; min-height: 100vh; }
+.sidebar {
+  width: 220px; min-height: calc(100vh - 60px); position: fixed; top: 60px; left: 0;
+  background: var(--navy2); border-right: 1px solid var(--border); padding: 24px 0;
+}
+.nav-section { padding: 0 16px; margin-bottom: 24px; }
+.nav-section-label {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em;
+  color: var(--muted); text-transform: uppercase; padding: 0 8px; margin-bottom: 8px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px;
+  cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.15s;
+  border: none; background: none; width: 100%; text-align: left;
+}
+.nav-item:hover { background: rgba(255,255,255,0.04); color: var(--white); }
+.nav-item.active { background: rgba(26,110,245,0.12); color: var(--white); }
+.nav-item.active .nav-icon { color: var(--blue2); }
+.nav-icon { font-size: 15px; width: 18px; text-align: center; }
+.nav-badge {
+  margin-left: auto; background: var(--red); color: var(--white);
+  font-size: 10px; font-family: 'DM Mono', monospace; padding: 2px 6px; border-radius: 10px;
+}
+
+/* Main content */
+.main { margin-left: 220px; padding: 32px; flex: 1; }
+
+/* ── PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+.page-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 0.04em;
+  color: var(--white); margin-bottom: 8px;
+}
+.page-sub { font-size: 13px; color: var(--muted); margin-bottom: 32px; }
+
+/* Stats cards */
+.stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+.stat-card {
+  background: var(--navy2); border: 1px solid var(--border); border-radius: 12px; padding: 20px 24px;
+}
+.stat-card-num {
+  font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 0.04em; color: var(--white);
+}
+.stat-card-num.green { color: var(--green); }
+.stat-card-num.blue { color: var(--blue2); }
+.stat-card-num.amber { color: var(--amber); }
+.stat-card-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+
+/* Section cards */
+.card {
+  background: var(--navy2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 24px; margin-bottom: 24px;
+}
+.card-title {
+  font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.15em;
+  color: var(--blue2); text-transform: uppercase; margin-bottom: 20px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* Tables */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  text-align: left; padding: 8px 12px; font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase;
+  border-bottom: 1px solid var(--border); font-weight: 400;
+}
+.data-table td { padding: 12px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Badges */
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.badge-educator { background: rgba(56,189,248,0.1); color: #38bdf8; border: 1px solid rgba(56,189,248,0.2); }
+.badge-student { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+.badge-manager { background: rgba(167,139,250,0.1); color: #a78bfa; border: 1px solid rgba(167,139,250,0.2); }
+.badge-admin { background: rgba(26,110,245,0.1); color: var(--blue2); border: 1px solid rgba(26,110,245,0.2); }
+.badge-used { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.badge-unused { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+
+/* Action buttons */
+.btn {
+  padding: 7px 16px; border-radius: 7px; font-family: 'DM Sans', sans-serif;
+  font-size: 12px; font-weight: 500; cursor: pointer; border: none; transition: all 0.2s;
+}
+.btn-blue { background: rgba(26,110,245,0.15); color: var(--blue2); border: 1px solid rgba(26,110,245,0.3); }
+.btn-blue:hover { background: var(--blue); color: var(--white); }
+.btn-red { background: rgba(248,113,113,0.1); color: var(--red); border: 1px solid rgba(248,113,113,0.2); }
+.btn-red:hover { background: var(--red); color: var(--white); }
+.btn-green { background: rgba(52,211,153,0.1); color: var(--green); border: 1px solid rgba(52,211,153,0.2); }
+.btn-green:hover { background: var(--green); color: #060b14; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-ghost:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+
+/* Forms */
+.form-row { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 16px; flex-wrap: wrap; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; }
+.form-input, .form-select {
+  background: var(--navy3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 9px 14px; color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 13px;
+  outline: none; transition: border-color 0.2s; min-width: 160px;
+}
+.form-input:focus, .form-select:focus { border-color: var(--blue); }
+.form-select option { background: var(--navy2); }
+
+/* Code display */
+.code-display {
+  font-family: 'DM Mono', monospace; font-size: 18px; letter-spacing: 0.15em;
+  color: var(--green); background: rgba(52,211,153,0.05);
+  border: 1px solid rgba(52,211,153,0.2); border-radius: 8px;
+  padding: 12px 20px; display: inline-block; margin: 8px 0;
+}
+
+/* Empty state */
+.empty-state { text-align: center; padding: 48px; color: var(--muted); font-size: 13px; }
+.empty-state .empty-icon { font-size: 32px; margin-bottom: 12px; }
+
+/* Progress bar */
+.progress-bar { height: 6px; background: var(--navy3); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--blue); border-radius: 3px; transition: width 0.3s; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 32px; right: 32px; z-index: 999;
+  background: var(--navy2); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 20px; font-size: 13px; color: var(--white);
+  transform: translateY(80px); opacity: 0; transition: all 0.3s;
+  display: flex; align-items: center; gap: 10px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-color: rgba(52,211,153,0.3); }
+.toast.error { border-color: rgba(248,113,113,0.3); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200;
+  display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--navy2); border: 1px solid var(--border); border-radius: 16px;
+  padding: 32px; width: 100%; max-width: 440px;
+}
+.modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.04em; margin-bottom: 8px; }
+.modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+</style>
+</head>
+<body>
+
+<!-- ── AUTH SCREEN ── -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">LARO<span>LABS</span></div>
+    <div class="auth-sub">Administrator Access</div>
+
+    <!-- Login form -->
+    <div id="login-form">
+      <label class="auth-label">Email</label>
+      <input class="auth-input" id="login-email" type="email" placeholder="your@email.com" />
+      <label class="auth-label">Password</label>
+      <input class="auth-input" id="login-password" type="password" placeholder="••••••••" />
+      <button class="auth-btn" onclick="adminLogin()">Sign In</button>
+      <div class="auth-error" id="login-error"></div>
+      <span class="auth-link" onclick="showForgot()">Forgot password?</span>
+    </div>
+
+    <!-- Forgot password -->
+    <div id="forgot-form" style="display:none">
+      <label class="auth-label">Email</label>
+      <input class="auth-input" id="forgot-email" type="email" placeholder="your@email.com" />
+      <button class="auth-btn" onclick="sendReset()">Send Reset Link</button>
+      <div class="auth-error" id="forgot-msg" style="color:var(--green)"></div>
+      <span class="auth-link" onclick="showLogin()">← Back to login</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ADMIN APP ── -->
+<div id="app">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div class="topbar-logo">LARO<span>LABS</span></div>
+      <div class="topbar-badge">Admin Panel</div>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-user" id="topbar-user"></span>
+      <button class="logout-btn" onclick="adminLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="layout">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-section-label">Overview</div>
+        <button class="nav-item active" onclick="showPanel('dashboard',this)">
+          <span class="nav-icon">◈</span> Dashboard
+        </button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Users</div>
+        <button class="nav-item" onclick="showPanel('users',this)">
+          <span class="nav-icon">👥</span> All Users
+        </button>
+        <button class="nav-item" onclick="showPanel('codes',this)">
+          <span class="nav-icon">🔑</span> Access Codes
+        </button>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-label">Activity</div>
+        <button class="nav-item" onclick="showPanel('progress',this)">
+          <span class="nav-icon">📊</span> Student Progress
+        </button>
+        <button class="nav-item" onclick="showPanel('messages',this)">
+          <span class="nav-icon">💬</span> Messages
+          <span class="nav-badge" id="msg-badge" style="display:none">!</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="main">
+
+      <!-- DASHBOARD -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Overview of all ICU Education activity</div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-card-num blue" id="stat-educators">—</div>
+            <div class="stat-card-label">Educators</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-num green" id="stat-students">—</div>
+            <div class="stat-card-label">Active Students</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-num" id="stat-managers">—</div>
+            <div class="stat-card-label">Managers</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-num amber" id="stat-codes">—</div>
+            <div class="stat-card-label">Unused Codes</div>
+          </div>
+        </div>
+
+        <!-- Recent activity -->
+        <div class="card">
+          <div class="card-title">Recent Completions</div>
+          <table class="data-table">
+            <thead><tr>
+              <th>Student</th><th>Educator</th><th>Topic</th><th>Completed</th>
+            </tr></thead>
+            <tbody id="recent-completions">
+              <tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📋</div>No completions yet</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- USERS -->
+      <div class="panel" id="panel-users">
+        <div class="page-title">All Users</div>
+        <div class="page-sub">Manage educators, students, and managers</div>
+        <div class="card">
+          <div class="card-title">
+            <span>User Accounts</span>
+            <div style="display:flex;gap:8px">
+              <select class="form-select" id="user-filter" onchange="filterUsers()" style="min-width:120px;padding:6px 10px;font-size:12px">
+                <option value="">All Roles</option>
+                <option value="educator">Educators</option>
+                <option value="student">Students</option>
+                <option value="manager">Managers</option>
+              </select>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead><tr>
+              <th>Name</th><th>Role</th><th>Linked To</th><th>Joined</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="users-table">
+              <tr><td colspan="5"><div class="empty-state"><div class="empty-icon">👥</div>Loading...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CODES -->
+      <div class="panel" id="panel-codes">
+        <div class="page-title">Access Codes</div>
+        <div class="page-sub">Generate single-use codes to onboard new users</div>
+
+        <!-- Generate -->
+        <div class="card">
+          <div class="card-title">Generate New Code</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Role</label>
+              <select class="form-select" id="code-role">
+                <option value="educator">Educator</option>
+                <option value="manager">Manager</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Label (optional)</label>
+              <input class="form-input" id="code-label" placeholder="e.g. ICU Unit A" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Recipient Email (optional)</label>
+              <input class="form-input" id="code-email" type="email" placeholder="their@email.com" />
+            </div>
+            <div class="form-group" style="justify-content:flex-end">
+              <button class="btn btn-green" onclick="generateCode()">Generate Code</button>
+            </div>
+          </div>
+          <div id="new-code-display" style="display:none">
+            <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.1em">New Code Generated</div>
+            <div class="code-display" id="new-code-value"></div>
+            <div style="display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap">
+              <div style="font-size:12px;color:var(--muted)">Copy this code and send it to the new user. It can only be used once.</div>
+              <button class="btn btn-blue" id="send-code-btn" style="display:none" onclick="sendCodeEmail()">✉ Send Email</button>
+            </div>
+            <div id="email-send-msg" style="font-size:12px;margin-top:8px;display:none"></div>
+          </div>
+        </div>
+
+        <!-- All codes -->
+        <div class="card">
+          <div class="card-title">All Codes</div>
+          <table class="data-table">
+            <thead><tr>
+              <th>Code</th><th>Role</th><th>Label</th><th>Status</th><th>Used By</th><th>Created</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="codes-table">
+              <tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🔑</div>Loading...</div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="panel" id="panel-progress">
+        <div class="page-title">Student Progress</div>
+        <div class="page-sub">Track completion across all active students</div>
+        <div id="progress-list">
+          <div class="empty-state"><div class="empty-icon">📊</div>Loading...</div>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="panel" id="panel-messages">
+        <div class="page-title">Messages</div>
+        <div class="page-sub">Communication between educators and managers</div>
+        <div class="card">
+          <div class="card-title">All Conversations</div>
+          <div id="messages-list">
+            <div class="empty-state"><div class="empty-icon">💬</div>No messages yet</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end main -->
+  </div><!-- end layout -->
+</div><!-- end app -->
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-box">
+    <div class="modal-title" id="confirm-title">Confirm Action</div>
+    <div class="modal-sub" id="confirm-body">Are you sure?</div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-red" id="confirm-action-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://uadyjsagkbikprlplkbn.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec'
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+let adminUser = null
+let allUsers = []
+let allCodes = []
+
+// ── AUTH ──
+function showForgot() {
+  document.getElementById('login-form').style.display = 'none'
+  document.getElementById('forgot-form').style.display = 'block'
+}
+function showLogin() {
+  document.getElementById('forgot-form').style.display = 'none'
+  document.getElementById('login-form').style.display = 'block'
+}
+
+async function adminLogin() {
+  const email = document.getElementById('login-email').value.trim()
+  const pass = document.getElementById('login-password').value
+  const errEl = document.getElementById('login-error')
+  errEl.style.display = 'none'
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass })
+  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
+
+  // Check admin role
+  const { data: profile } = await sb.from('profiles').select('role,full_name').eq('id', data.user.id).single()
+  if (!profile || profile.role !== 'admin') {
+    await sb.auth.signOut()
+    errEl.textContent = 'Access denied — admin accounts only.'
+    errEl.style.display = 'block'
+    return
+  }
+
+  adminUser = { ...data.user, full_name: profile.full_name }
+  document.getElementById('topbar-user').textContent = profile.full_name || email
+  document.getElementById('auth-screen').style.display = 'none'
+  document.getElementById('app').style.display = 'block'
+  loadAll()
+}
+
+async function sendReset() {
+  const email = document.getElementById('forgot-email').value.trim()
+  const msg = document.getElementById('forgot-msg')
+  const { error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/admin'
+  })
+  if (error) { msg.style.color = 'var(--red)'; msg.textContent = error.message; }
+  else { msg.style.color = 'var(--green)'; msg.textContent = 'Reset link sent — check your email.' }
+  msg.style.display = 'block'
+}
+
+async function adminLogout() {
+  await sb.auth.signOut()
+  location.reload()
+}
+
+// ── NAVIGATION ──
+function showPanel(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'))
+  document.getElementById('panel-' + name).classList.add('active')
+  btn.classList.add('active')
+  if (name === 'users') loadUsers()
+  if (name === 'codes') loadCodes()
+  if (name === 'progress') loadProgress()
+  if (name === 'dashboard') loadDashboard()
+}
+
+// ── LOAD ALL ──
+async function loadAll() {
+  loadDashboard()
+  loadUsers()
+  loadCodes()
+}
+
+// ── DASHBOARD ──
+async function loadDashboard() {
+  const { data: profiles } = await sb.from('profiles').select('*')
+  if (!profiles) return
+
+  const educators = profiles.filter(p => p.role === 'educator')
+  const students = profiles.filter(p => p.role === 'student')
+  const managers = profiles.filter(p => p.role === 'manager')
+
+  document.getElementById('stat-educators').textContent = educators.length
+  document.getElementById('stat-students').textContent = students.length
+  document.getElementById('stat-managers').textContent = managers.length
+
+  const { data: codes } = await sb.from('access_codes').select('*').eq('is_used', false)
+  document.getElementById('stat-codes').textContent = codes?.length || 0
+
+  const { data: recent } = await sb.from('topic_progress')
+    .select('*, profiles!student_id(full_name)')
+    .order('completed_at', { ascending: false })
+    .limit(10)
+
+  const tbody = document.getElementById('recent-completions')
+  if (!recent || recent.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">📋</div>No completions yet</div></td></tr>'
+    return
+  }
+  tbody.innerHTML = recent.map(r => {
+    const student = profiles.find(p => p.id === r.student_id)
+    const educator = profiles.find(p => p.id === r.educator_id)
+    return `<tr>
+      <td>${esc(student?.full_name || '—')}</td>
+      <td>${esc(educator?.full_name || '—')}</td>
+      <td>${esc(r.topic_name)}</td>
+      <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">${new Date(r.completed_at).toLocaleDateString()}</td>
+    </tr>`
+  }).join('')
+}
+
+// ── USERS ──
+async function loadUsers() {
+  const { data } = await sb.from('profiles').select('*').order('created_at', { ascending: false })
+  allUsers = data || []
+  renderUsers(allUsers)
+}
+
+function filterUsers() {
+  const role = document.getElementById('user-filter').value
+  const filtered = role ? allUsers.filter(u => u.role === role) : allUsers
+  renderUsers(filtered)
+}
+
+function renderUsers(users) {
+  const tbody = document.getElementById('users-table')
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">👥</div>No users found</div></td></tr>'
+    return
+  }
+  tbody.innerHTML = users.map(u => {
+    const linked = u.educator_id ? allUsers.find(x => x.id === u.educator_id) : null
+    return `<tr>
+      <td style="font-weight:400">${esc(u.full_name || 'Unnamed')}</td>
+      <td><span class="badge badge-${u.role}">${u.role}</span></td>
+      <td style="color:var(--muted);font-size:12px">${linked ? esc(linked.full_name) : '—'}</td>
+      <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">${new Date(u.created_at).toLocaleDateString()}</td>
+      <td>
+        <div style="display:flex;gap:6px">
+          ${u.role !== 'admin' ? `<button class="btn btn-red" onclick="confirmRemoveUser('${u.id}','${esc(u.full_name)}','${u.role}')">Remove</button>` : ''}
+        </div>
+      </td>
+    </tr>`
+  }).join('')
+}
+
+function confirmRemoveUser(id, name, role) {
+  document.getElementById('confirm-title').textContent = 'Remove User'
+  document.getElementById('confirm-body').textContent = `Remove ${name} (${role})? This cannot be undone. Any connected students or educators will be unlinked.`
+  document.getElementById('confirm-action-btn').onclick = () => removeUser(id, role)
+  document.getElementById('confirm-modal').classList.add('open')
+}
+
+async function removeUser(id, role) {
+  closeModal()
+  // If removing educator, unlink their students
+  if (role === 'educator') {
+    await sb.from('profiles').update({ educator_id: null }).eq('educator_id', id)
+    // Notify affected students via email edge function
+    try {
+      const { data: { session } } = await sb.auth.getSession()
+      await fetch(`${SUPABASE_URL}/functions/v1/notify-user-removed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+        body: JSON.stringify({ removedUserId: id, removedRole: role })
+      })
+    } catch(e) { console.error(e) }
+  }
+  // Remove from profiles
+  await sb.from('profiles').delete().eq('id', id)
+  // Remove from auth
+  try {
+    const { data: { session } } = await sb.auth.getSession()
+    await fetch(`${SUPABASE_URL}/functions/v1/delete-auth-user`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+      body: JSON.stringify({ userId: id })
+    })
+  } catch(e) { console.error(e) }
+
+  showToast('User removed successfully', 'success')
+  loadUsers()
+  loadDashboard()
+}
+
+// ── CODES ──
+async function loadCodes() {
+  const { data } = await sb.from('access_codes').select('*').order('created_at', { ascending: false })
+  allCodes = data || []
+  renderCodes(allCodes)
+}
+
+function renderCodes(codes) {
+  const tbody = document.getElementById('codes-table')
+  if (!codes.length) {
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">🔑</div>No codes yet</div></td></tr>'
+    return
+  }
+  tbody.innerHTML = codes.map(c => {
+    const usedBy = c.used_by ? allUsers.find(u => u.id === c.used_by) : null
+    return `<tr>
+      <td><span style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.1em;color:${c.is_used ? 'var(--muted)' : 'var(--green)'}">${c.code}</span></td>
+      <td><span class="badge badge-${c.role}">${c.role}</span></td>
+      <td style="color:var(--muted);font-size:12px">${c.label || '—'}</td>
+      <td><span class="badge badge-${c.is_used ? 'used' : 'unused'}">${c.is_used ? 'Used' : 'Available'}</span></td>
+      <td style="color:var(--muted);font-size:12px">${usedBy ? esc(usedBy.full_name) : '—'}</td>
+      <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">${new Date(c.created_at).toLocaleDateString()}</td>
+      <td>${!c.is_used ? `<button class="btn btn-red" onclick="deleteCode('${c.id}')">Delete</button>` : ''}</td>
+    </tr>`
+  }).join('')
+}
+
+const RESEND_API_KEY = 're_if7VUb4f_2z4zzvBsbRdU3SPhJ59ewpjm';
+const FROM_EMAIL = 'noreply@larolabs.com';
+
+async function generateCode() {
+  const role = document.getElementById('code-role').value
+  const label = document.getElementById('code-label').value.trim()
+  const email = document.getElementById('code-email').value.trim()
+  const code = generateCodeString()
+
+  const { error } = await sb.from('access_codes').insert({
+    code, role, label: label || null, created_by: adminUser.id
+  })
+
+  if (error) {
+    showToast('Error: ' + error.message, 'error')
+    console.error('Code error:', error)
+    return
+  }
+
+  document.getElementById('new-code-value').textContent = code
+  document.getElementById('new-code-display').style.display = 'block'
+  document.getElementById('code-label').value = ''
+
+  // Show send button if email provided
+  const sendBtn = document.getElementById('send-code-btn')
+  if (email) {
+    sendBtn.style.display = 'inline-block'
+    sendBtn.dataset.email = email
+    sendBtn.dataset.code = code
+    sendBtn.dataset.role = role
+  } else {
+    sendBtn.style.display = 'none'
+  }
+  document.getElementById('email-send-msg').style.display = 'none'
+
+  showToast(`${role} code generated`, 'success')
+  loadCodes()
+}
+
+async function sendCodeEmail() {
+  const btn = document.getElementById('send-code-btn')
+  const email = btn.dataset.email
+  const code = btn.dataset.code
+  const role = btn.dataset.role
+  const msgEl = document.getElementById('email-send-msg')
+
+  const roleLabel = role === 'educator' ? 'Educator' : 'Manager'
+  const signupLink = `https://larolabs.com/#signup-${role}`
+
+  btn.textContent = 'Sending...'
+  btn.disabled = true
+
+  try {
+    const res = await fetch('https://uadyjsagkbikprlplkbn.supabase.co/functions/v1/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec' },
+      body: JSON.stringify({
+        to: [email],
+        subject: `You've been invited to ICU Core as an ${roleLabel}`,
+        html: `
+          <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px;background:#f8faff">
+            <div style="background:#080f1e;border-radius:12px;padding:32px;color:#f8faff">
+              <div style="font-size:22px;font-weight:700;margin-bottom:8px">ICU <span style="color:#2d85ff">Core</span></div>
+              <div style="font-size:13px;color:#8a9bb5;margin-bottom:24px;text-transform:uppercase;letter-spacing:0.1em">Western Arizona Regional</div>
+              <p style="font-size:15px;color:#c5d8ff;margin-bottom:16px">You've been invited to join ICU Core as an <strong style="color:#f8faff">${roleLabel}</strong>.</p>
+              <p style="font-size:14px;color:#8a9bb5;margin-bottom:24px">Use the registration code below to create your account:</p>
+              <div style="background:#132035;border:1px solid #2d85ff;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
+                <div style="font-family:monospace;font-size:28px;letter-spacing:0.2em;color:#2d85ff">${code}</div>
+                <div style="font-size:12px;color:#8a9bb5;margin-top:8px">Single-use registration code</div>
+              </div>
+              <a href="${signupLink}" style="display:block;background:#1a6ef5;color:#fff;text-align:center;padding:14px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px">Create Your Account →</a>
+              <p style="font-size:12px;color:#3d5a7a;margin-top:24px;text-align:center">This code can only be used once. If you have questions contact your administrator.</p>
+            </div>
+          </div>
+        `
+      })
+    })
+
+    if (res.ok) {
+      msgEl.style.color = 'var(--green)'
+      msgEl.textContent = '✓ Email sent to ' + email
+      msgEl.style.display = 'block'
+      btn.textContent = '✓ Sent'
+    } else {
+      const err = await res.json()
+      msgEl.style.color = 'var(--red)'
+      msgEl.textContent = 'Error: ' + (err.message || 'Failed to send')
+      msgEl.style.display = 'block'
+      btn.textContent = '✉ Send Email'
+      btn.disabled = false
+    }
+  } catch(e) {
+    msgEl.style.color = 'var(--red)'
+    msgEl.textContent = 'Error: ' + e.message
+    msgEl.style.display = 'block'
+    btn.textContent = '✉ Send Email'
+    btn.disabled = false
+  }
+}
+
+async function deleteCode(id) {
+  await sb.from('access_codes').delete().eq('id', id)
+  showToast('Code deleted', 'success')
+  loadCodes()
+}
+
+function generateCodeString() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let code = ''
+  for (let i = 0; i < 8; i++) {
+    if (i === 4) code += '-'
+    code += chars[Math.floor(Math.random() * chars.length)]
+  }
+  return code
+}
+
+// ── PROGRESS ──
+async function loadProgress() {
+  const { data: profiles } = await sb.from('profiles').select('*')
+  const students = (profiles || []).filter(p => p.role === 'student')
+
+  if (!students.length) {
+    document.getElementById('progress-list').innerHTML = '<div class="empty-state"><div class="empty-icon">📊</div>No students yet</div>'
+    return
+  }
+
+  const { data: progress } = await sb.from('topic_progress').select('*')
+  const totalTopics = 110
+
+  const html = students.map(s => {
+    const educator = profiles.find(p => p.id === s.educator_id)
+    const completed = (progress || []).filter(p => p.student_id === s.id && !p.undone_by_educator).length
+    const pct = Math.round((completed / totalTopics) * 100)
+
+    return `<div class="card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div>
+          <div style="font-weight:400;font-size:15px">${esc(s.full_name || 'Unnamed')}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">Educator: ${esc(educator?.full_name || 'Unassigned')}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--blue2)">${pct}%</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${completed} / ${totalTopics} topics</div>
+        </div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    </div>`
+  }).join('')
+
+  document.getElementById('progress-list').innerHTML = html
+}
+
+// ── UTILITIES ──
+function showToast(msg, type = 'success') {
+  const t = document.getElementById('toast')
+  t.textContent = (type === 'success' ? '✓ ' : '✕ ') + msg
+  t.className = `toast ${type} show`
+  setTimeout(() => t.className = 'toast', 3000)
+}
+
+function closeModal() {
+  document.getElementById('confirm-modal').classList.remove('open')
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// ── INIT ──
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    // Show password reset UI
+    document.getElementById('auth-screen').style.display = 'flex'
+    document.getElementById('login-form').innerHTML = `
+      <label class="auth-label">New Password</label>
+      <input class="auth-input" id="new-password" type="password" placeholder="New password" />
+      <button class="auth-btn" onclick="updatePassword()">Set New Password</button>
+      <div class="auth-error" id="pw-msg"></div>
+    `
+  }
+})
+
+async function updatePassword() {
+  const pw = document.getElementById('new-password').value
+  const { error } = await sb.auth.updateUser({ password: pw })
+  const msg = document.getElementById('pw-msg')
+  if (error) { msg.style.color = 'var(--red)'; msg.textContent = error.message; msg.style.display = 'block'; return; }
+  msg.style.color = 'var(--green)'; msg.textContent = 'Password updated! Signing in...'
+  msg.style.display = 'block'
+  setTimeout(() => location.reload(), 1500)
+}
+</script>
+</body>
+</html>

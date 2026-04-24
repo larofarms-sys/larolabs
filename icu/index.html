@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ICU Edu">
+<meta name="theme-color" content="#070d1a">
+<title>ICU Education Program</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #070d1a;
+  --surface:  #0e1829;
+  --surface2: #152033;
+  --border:   #1c2e48;
+  --border2:  #243a5e;
+  --accent:   #3b9eff;
+  --accent2:  #22d3a5;
+  --danger:   #f43f5e;
+  --warn:     #fb923c;
+  --text:     #e8eef7;
+  --text-mid: #7a9bbf;
+  --text-dim: #3d5a7a;
+  --serif:    'DM Serif Display', serif;
+  --sans:     'DM Sans', sans-serif;
+  --mono:     'DM Mono', monospace;
+  --radius:   12px;
+  --sh:       0 4px 32px rgba(0,0,0,.45);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+}
+
+/* ─── SCREENS ─── */
+.screen { display: none; width: 100%; height: 100%; position: absolute; inset: 0; }
+.screen.active { display: flex; }
+
+/* ─── LOGIN SCREEN ─── */
+#screen-login {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg);
+  padding: 24px;
+  overflow-y: auto;
+}
+
+/* Background grid lines */
+#screen-login::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(59,158,255,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,158,255,.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+
+.login-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  padding: 36px 32px 32px;
+  box-shadow: var(--sh), 0 0 80px rgba(59,158,255,.06);
+  position: relative;
+  z-index: 1;
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 28px;
+}
+.login-logo-icon {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, #0e2a4a, #1a3f6f);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  margin-bottom: 14px;
+  box-shadow: 0 0 24px rgba(59,158,255,.15);
+}
+.login-logo h1 {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--text);
+  letter-spacing: -.01em;
+  line-height: 1.2;
+}
+.login-logo p {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-family: var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* Role tabs */
+.role-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px;
+  margin-bottom: 24px;
+  gap: 4px;
+}
+.role-tab {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-mid);
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.role-tab.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(59,158,255,.35);
+}
+.role-tab:not(.active):hover { color: var(--text); background: var(--border); }
+
+/* Form fields */
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  font-family: var(--mono);
+}
+.field input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 14px;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(59,158,255,.12);
+}
+.field input::placeholder { color: var(--text-dim); }
+
+.btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 10px;
+  border: none;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(59,158,255,.3);
+}
+.btn-primary:hover { background: #5aadff; transform: translateY(-1px); }
+.btn-primary:active { transform: translateY(0); }
+.btn-ghost {
+  background: transparent;
+  color: var(--text-mid);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--border2); color: var(--text); }
+
+.form-toggle {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--text-dim);
+}
+.form-toggle a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+.form-toggle a:hover { text-decoration: underline; }
+
+.msg-box {
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  display: none;
+}
+.msg-box.error { background: rgba(244,63,94,.1); border: 1px solid rgba(244,63,94,.25); color: #fda4af; display: block; }
+.msg-box.success { background: rgba(34,211,165,.1); border: 1px solid rgba(34,211,165,.25); color: #6ee7d4; display: block; }
+
+.divider {
+  display: flex; align-items: center; gap: 10px;
+  margin: 18px 0; color: var(--text-dim); font-size: 12px;
+}
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* ─── APP SHELL ─── */
+#screen-app {
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Top bar */
+.topbar {
+  height: 56px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 50;
+}
+.topbar-logo {
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--text);
+  flex: 1;
+}
+.topbar-logo span { color: var(--accent); }
+.topbar-role {
+  font-family: var(--mono);
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.role-badge-educator { background: rgba(59,158,255,.12); color: var(--accent); }
+.role-badge-student  { background: rgba(34,211,165,.12); color: var(--accent2); }
+.role-badge-manager  { background: rgba(251,146,60,.12); color: var(--warn); }
+.role-badge-admin    { background: rgba(59,158,255,.12); color: var(--accent); }
+.topbar-name { font-size: 13px; color: var(--text-mid); }
+.topbar-signout {
+  background: none; border: none; color: var(--text-dim);
+  cursor: pointer; font-size: 18px; padding: 4px 6px; border-radius: 6px;
+  transition: color .2s;
+}
+.topbar-signout:hover { color: var(--danger); }
+
+/* App body */
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  padding: 16px 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-section { margin-bottom: 8px; }
+.sidebar-label {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .15em;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  padding: 6px 18px 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px;
+  color: var(--text-mid);
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all .15s;
+  border-left: 2px solid transparent;
+  user-select: none;
+}
+.nav-item:hover { color: var(--text); background: var(--surface2); }
+.nav-item.active { color: var(--accent); border-left-color: var(--accent); background: rgba(59,158,255,.06); font-weight: 500; }
+.nav-item .ni-icon { font-size: 15px; flex-shrink: 0; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--danger);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+  display: none;
+}
+.nav-badge.show { display: block; }
+
+/* ─── MAIN PANEL ─── */
+.main-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.main-panel::-webkit-scrollbar { width: 5px; }
+.main-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Panel views */
+.panel-view { display: none; }
+.panel-view.active { display: block; }
+
+.panel-title {
+  font-family: var(--serif);
+  font-size: 26px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.panel-sub {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+/* Cards */
+.card-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.stat-card .sc-label { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+.stat-card .sc-val { font-family: var(--serif); font-size: 32px; color: var(--text); line-height: 1; }
+.stat-card .sc-sub { font-size: 12px; color: var(--text-mid); margin-top: 4px; }
+
+/* ─── DASHBOARD EXTRAS ─── */
+.dash-section-title {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+.student-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.student-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), #1a5fba);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-size: 20px;
+  color: #fff;
+  flex-shrink: 0;
+}
+.student-info { flex: 1; }
+.student-name { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.student-meta { font-size: 12px; color: var(--text-mid); margin-bottom: 10px; }
+.student-progress-bar { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+.student-progress-fill { height: 100%; background: var(--accent2); border-radius: 3px; transition: width .4s; }
+.student-pct { font-family: var(--mono); font-size: 11px; color: var(--accent2); margin-top: 4px; }
+.code-card {
+  background: var(--surface);
+  border: 1px solid rgba(59,158,255,.25);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.code-value {
+  font-family: var(--mono);
+  font-size: 26px;
+  letter-spacing: .18em;
+  color: var(--accent);
+  flex: 1;
+}
+.code-meta { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+.btn-copy {
+  background: rgba(59,158,255,.1);
+  border: 1px solid rgba(59,158,255,.25);
+  border-radius: 8px;
+  color: var(--accent);
+  font-size: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-family: var(--mono);
+  transition: all .2s;
+  white-space: nowrap;
+}
+.btn-copy:hover { background: rgba(59,158,255,.2); }
+.educator-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+.educator-row-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.educator-avatar {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(251,146,60,.3), rgba(251,146,60,.1));
+  border: 1px solid rgba(251,146,60,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  color: var(--warn);
+  font-family: var(--serif);
+  flex-shrink: 0;
+}
+.educator-name { font-size: 14px; font-weight: 500; color: var(--text); }
+.educator-badge {
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: rgba(251,146,60,.1);
+  color: var(--warn);
+  border: 1px solid rgba(251,146,60,.2);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.no-student-msg {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-style: italic;
+  padding: 4px 0;
+}
+
+/* ─── MESSAGING ─── */
+.msg-layout {
+  display: flex;
+  height: calc(100vh - 56px - 56px);
+  gap: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.msg-sidebar {
+  width: 200px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  padding: 12px 0;
+}
+.msg-thread-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background .15s;
+  border-left: 2px solid transparent;
+}
+.msg-thread-item:hover { background: var(--surface2); }
+.msg-thread-item.active { background: rgba(59,158,255,.07); border-left-color: var(--accent); }
+.msg-thread-item .mt-name { font-size: 13px; font-weight: 500; color: var(--text); }
+.msg-thread-item .mt-preview { font-size: 11px; color: var(--text-dim); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg-thread-label { font-family: var(--mono); font-size: 9px; color: var(--text-dim); letter-spacing: .12em; text-transform: uppercase; padding: 8px 14px 4px; }
+
+.msg-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.msg-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.msg-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.msg-body::-webkit-scrollbar { width: 4px; }
+.msg-body::-webkit-scrollbar-thumb { background: var(--border); }
+
+.msg-bubble-wrap { display: flex; gap: 8px; align-items: flex-end; }
+.msg-bubble-wrap.mine { flex-direction: row-reverse; }
+.msg-avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--text-mid);
+  flex-shrink: 0;
+}
+.msg-bubble {
+  max-width: 70%;
+  padding: 9px 13px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.msg-bubble.theirs {
+  background: var(--surface2);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+.msg-bubble.mine {
+  background: var(--accent);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.msg-meta { font-size: 10px; color: var(--text-dim); margin-top: 3px; text-align: right; }
+.msg-meta.theirs { text-align: left; }
+
+.msg-input-row {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.msg-input {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  outline: none;
+  resize: none;
+  max-height: 100px;
+  transition: border-color .2s;
+}
+.msg-input:focus { border-color: var(--accent); }
+.msg-input::placeholder { color: var(--text-dim); }
+.msg-send {
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  width: 42px;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background .2s, transform .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.msg-send:hover { background: #5aadff; transform: scale(1.05); }
+
+/* ─── PEOPLE LIST ─── */
+.people-list { display: flex; flex-direction: column; gap: 10px; }
+.person-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.person-avatar {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #0e2a4a, #1a3f6f);
+  border: 1px solid var(--border2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.person-info { flex: 1; }
+.person-name { font-size: 14px; font-weight: 500; color: var(--text); }
+.person-role { font-family: var(--mono); font-size: 10px; color: var(--text-dim); margin-top: 2px; letter-spacing: .05em; }
+.person-msg-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 12px;
+  color: var(--text-mid);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.person-msg-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ─── ANNOUNCEMENTS ─── */
+.announcement-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 12px;
+}
+.ann-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 8px; }
+.ann-title { font-family: var(--serif); font-size: 17px; color: var(--text); }
+.ann-date { font-family: var(--mono); font-size: 10px; color: var(--text-dim); flex-shrink: 0; }
+.ann-body { font-size: 13px; color: var(--text-mid); line-height: 1.6; }
+.ann-author { font-size: 11px; color: var(--text-dim); margin-top: 8px; font-style: italic; }
+
+/* New announcement form */
+.ann-form { background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 20px; }
+.ann-form textarea {
+  width: 100%; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px 14px; color: var(--text);
+  font-family: var(--sans); font-size: 13px;
+  resize: vertical; min-height: 80px; outline: none;
+  transition: border-color .2s; margin-top: 8px;
+}
+.ann-form textarea:focus { border-color: var(--accent); }
+.btn-sm {
+  padding: 8px 16px; border-radius: 8px; border: none;
+  font-family: var(--sans); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: all .15s;
+}
+.btn-sm-primary { background: var(--accent); color: #fff; }
+.btn-sm-primary:hover { background: #5aadff; }
+
+/* ─── MOBILE ─── */
+.mobile-nav {
+  display: none;
+  height: 60px;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-around;
+}
+.mnav-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 3px; cursor: pointer; padding: 6px 14px;
+  color: var(--text-dim); font-size: 10px;
+  transition: color .15s; font-family: var(--mono);
+  letter-spacing: .04em;
+}
+.mnav-item .mni { font-size: 20px; }
+.mnav-item.active { color: var(--accent); }
+
+.hamburger {
+  display: none;
+  background: none; border: none;
+  color: var(--text-mid); font-size: 22px;
+  cursor: pointer; padding: 4px 8px;
+}
+
+@media (max-width: 700px) {
+  .sidebar { display: none; position: fixed; inset: 56px 0 60px 0; width: 100%; z-index: 40; background: var(--surface); border-right: none; border-bottom: 1px solid var(--border); }
+  .sidebar.mobile-open { display: flex; }
+  .mobile-nav { display: flex; }
+  .main-panel { padding: 16px; }
+  .hamburger { display: block; }
+  .msg-sidebar { width: 100%; max-width: 140px; }
+  .msg-layout { height: calc(100vh - 56px - 60px - 48px); min-height: 300px; }
+  .topbar-name { display: none; }
+  .card-row { grid-template-columns: 1fr 1fr; }
+}
+
+/* ─── SPINNER ─── */
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid rgba(255,255,255,.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Empty state */
+.empty-state { text-align: center; padding: 40px 20px; color: var(--text-dim); }
+.empty-state .es-icon { font-size: 36px; margin-bottom: 12px; }
+.empty-state p { font-size: 13px; }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+  background: #1a3250; border: 1px solid var(--border2);
+  color: var(--text); padding: 10px 20px; border-radius: 10px;
+  font-size: 13px; z-index: 9999; opacity: 0;
+  transition: opacity .3s; pointer-events: none; white-space: nowrap;
+}
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
+<!-- LOADING SCREEN -->
+<div id="screen-loading" style="position:fixed;inset:0;background:#070d1a;display:flex;align-items:center;justify-content:center;z-index:999">
+  <div style="text-align:center">
+    <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#e8eef7;margin-bottom:16px">ICU <span style="color:#3b9eff">Core</span></div>
+    <div style="width:32px;height:32px;border:2px solid rgba(59,158,255,.2);border-top-color:#3b9eff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto"></div>
+  </div>
+</div>
+
+<div id="screen-login" class="screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">🏥</div>
+      <h1>ICU Education<br>Program</h1>
+      <p>Western Arizona Regional</p>
+    </div>
+
+    <!-- Role tabs -->
+    <div class="role-tabs">
+      <button class="role-tab active" id="tab-educator" onclick="switchTab('educator')">
+        👩‍⚕️ Educator
+      </button>
+      <button class="role-tab" id="tab-student" onclick="switchTab('student')">
+        🎓 Student
+      </button>
+    </div>
+
+    <!-- Message box -->
+    <div class="msg-box" id="auth-msg"></div>
+    <div id="debug-msg" style="display:none;background:rgba(0,0,0,.4);border:1px solid #1c2e48;border-radius:8px;padding:10px 14px;font-family:DM Mono,monospace;font-size:11px;color:#7a9bbf;margin-bottom:12px;word-break:break-all;"></div>
+
+    <!-- SIGN IN FORM -->
+    <div id="form-signin">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="signin-email" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="signin-password" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <button class="btn btn-primary" onclick="handleSignIn()">
+        <span id="signin-btn-text">Sign In</span>
+      </button>
+      <div class="divider">or</div>
+      <div class="form-toggle">
+        Don't have an account? <a onclick="showSignUp()">Request access</a>
+      </div>
+    </div>
+
+    <!-- SIGN UP FORM -->
+    <div id="form-signup" style="display:none">
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="signup-name" placeholder="Jane Smith">
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="your@email.com" autocomplete="email">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="signup-password" placeholder="Min 6 characters" autocomplete="new-password">
+      </div>
+      <!-- Student only: invite code -->
+      <div class="field" id="invite-field" style="display:none">
+        <label>Invite Code (from your educator)</label>
+        <input type="text" id="signup-invite" placeholder="e.g. EDU-AB3X9" style="text-transform:uppercase;letter-spacing:.1em">
+      </div>
+      <button class="btn btn-primary" onclick="handleSignUp()">
+        <span id="signup-btn-text">Create Account</span>
+      </button>
+      <div class="divider">or</div>
+      <div class="form-toggle">
+        Already have an account? <a onclick="showSignIn()">Sign in</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP SCREEN ═══════════════ -->
+<div id="screen-app" class="screen">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+    <button class="hamburger" onclick="toggleMobileNav()">☰</button>
+    <div class="topbar-logo">ICU <span>Core</span></div>
+    <span class="topbar-name" id="topbar-name"></span>
+    <span class="topbar-role" id="topbar-role"></span>
+    <button class="topbar-signout" onclick="handleSignOut()" title="Sign out">⏻</button>
+  </div>
+
+  <div class="app-body">
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-label">Main</div>
+        <div class="nav-item active" data-view="dashboard" onclick="switchView('dashboard')">
+          <span class="ni-icon">⊞</span> Dashboard
+        </div>
+        <div class="nav-item" data-view="announcements" onclick="switchView('announcements')">
+          <span class="ni-icon">📢</span> Announcements
+          <span class="nav-badge" id="badge-ann"></span>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-label">Communication</div>
+        <div class="nav-item" data-view="messages" onclick="switchView('messages')">
+          <span class="ni-icon">💬</span> Messages
+          <span class="nav-badge" id="badge-msg"></span>
+        </div>
+      </div>
+      <div class="sidebar-section" id="sidebar-people-section">
+        <div class="sidebar-label">People</div>
+        <div class="nav-item" data-view="people" onclick="switchView('people')">
+          <span class="ni-icon">👥</span> <span id="sidebar-people-label">Directory</span>
+        </div>
+      </div>
+      <!-- Educator only: reference -->
+      <div class="sidebar-section" id="sidebar-ref-section" style="display:none">
+        <div class="sidebar-label">Training</div>
+        <div class="nav-item" onclick="window.location.href='/icu/toc/'">
+          <span class="ni-icon">📋</span> ICU Core
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Panel -->
+    <div class="main-panel" id="main-panel">
+
+      <!-- DASHBOARD -->
+      <div class="panel-view active" id="view-dashboard">
+        <div class="panel-title" id="dash-greeting">Welcome back</div>
+        <div class="panel-sub" id="dash-sub">ICU Core</div>
+
+        <!-- STUDENT DASHBOARD -->
+        <div id="dash-student" style="display:none">
+          <div class="card-row" id="dash-student-stats"></div>
+          <div class="dash-section-title">My Progress</div>
+          <div id="dash-student-progress">
+            <div class="empty-state"><div class="es-icon">📊</div><p>Loading progress...</p></div>
+          </div>
+        </div>
+
+        <!-- EDUCATOR DASHBOARD -->
+        <div id="dash-educator" style="display:none">
+          <div class="card-row" id="dash-educator-stats"></div>
+          <div class="dash-section-title">My Student</div>
+          <div id="dash-educator-student">
+            <div class="empty-state"><div class="es-icon">🎓</div><p>No student connected yet. Share your access code below.</p></div>
+          </div>
+          <div class="dash-section-title" style="margin-top:24px">Student Access Code</div>
+          <div id="dash-educator-code">
+            <div class="empty-state"><div class="es-icon">🔑</div><p>Loading...</p></div>
+          </div>
+        </div>
+
+        <!-- MANAGER DASHBOARD -->
+        <div id="dash-manager" style="display:none">
+          <div class="card-row" id="dash-manager-stats"></div>
+          <div class="dash-section-title">Educators &amp; Their Students</div>
+          <div id="dash-manager-list">
+            <div class="empty-state"><div class="es-icon">👥</div><p>No educators yet</p></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANNOUNCEMENTS -->
+      <div class="panel-view" id="view-announcements">
+        <div class="panel-title">Announcements</div>
+        <div class="panel-sub">Program-wide updates from management</div>
+        <!-- Manager post form (shown only to manager) -->
+        <div id="ann-post-form" style="display:none">
+          <div class="ann-form">
+            <div class="field" style="margin:0 0 8px 0">
+              <label>Title</label>
+              <input type="text" id="ann-title-input" placeholder="Announcement title..." style="margin-top:6px">
+            </div>
+            <textarea id="ann-body-input" placeholder="Write your announcement..."></textarea>
+            <div style="margin-top:10px;display:flex;justify-content:flex-end">
+              <button class="btn-sm btn-sm-primary" onclick="postAnnouncement()">Post Announcement</button>
+            </div>
+          </div>
+        </div>
+        <div id="ann-list">
+          <div class="empty-state"><div class="es-icon">📢</div><p>No announcements yet</p></div>
+        </div>
+      </div>
+
+      <!-- MESSAGES -->
+      <div class="panel-view" id="view-messages">
+        <div class="panel-title">Messages</div>
+        <div class="panel-sub" id="msg-sub">Communicate with your team</div>
+        <div class="msg-layout" id="msg-layout">
+          <div class="msg-sidebar" id="msg-thread-list">
+            <!-- threads injected here -->
+          </div>
+          <div class="msg-main">
+            <div class="msg-header" id="msg-header">Select a conversation</div>
+            <div class="msg-body" id="msg-body">
+              <div class="empty-state"><div class="es-icon">💬</div><p>Select a conversation to start messaging</p></div>
+            </div>
+            <div class="msg-input-row" id="msg-input-row" style="display:none">
+              <textarea class="msg-input" id="msg-input" placeholder="Type a message..." rows="1"
+                onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage();}"></textarea>
+              <button class="msg-send" onclick="sendMessage()">➤</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PEOPLE -->
+      <div class="panel-view" id="view-people">
+        <div class="panel-title" id="people-title">Directory</div>
+        <div class="panel-sub" id="people-sub">Your team</div>
+        <div class="people-list" id="people-list"></div>
+      </div>
+
+      <!-- REFERENCE (link to ICU ref app) -->
+      <div class="panel-view" id="view-reference">
+        <div class="panel-title">ICU Reference</div>
+        <div class="panel-sub">Quick-access clinical reference tool</div>
+        <div class="announcement-card" style="text-align:center;padding:32px">
+          <div style="font-size:40px;margin-bottom:16px">📋</div>
+          <div style="font-family:var(--serif);font-size:20px;margin-bottom:8px">ICU Quick Reference</div>
+          <div style="font-size:13px;color:var(--text-mid);margin-bottom:20px">Medications, pathophysiology, devices, protocols and more</div>
+          <button class="btn btn-primary" style="max-width:200px;margin:0 auto" onclick="window.location.href='/icu/toc/'">Open Training →</button>
+        </div>
+      </div>
+
+    </div><!-- end main-panel -->
+  </div><!-- end app-body -->
+
+  <!-- Mobile bottom nav -->
+  <div class="mobile-nav">
+    <div class="mnav-item active" data-view="dashboard" onclick="switchView('dashboard')"><span class="mni">⊞</span>Home</div>
+    <div class="mnav-item" data-view="announcements" onclick="switchView('announcements')"><span class="mni">📢</span>Board</div>
+    <div class="mnav-item" data-view="messages" onclick="switchView('messages')"><span class="mni">💬</span>Messages</div>
+    <div class="mnav-item" data-view="people" onclick="switchView('people')"><span class="mni">👥</span>People</div>
+  </div>
+
+</div><!-- end screen-app -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+const SUPABASE_URL = 'https://uadyjsagkbikprlplkbn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec';
+window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = window.sb;
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+let currentUser = null;
+
+// Normalize admin → educator so Angela can use the ICU app as an educator
+function getRole(profile) {
+  if (!profile) return null;
+  return profile.role === 'admin' ? 'educator' : profile.role;
+}
+let currentProfile = null;
+let allProfiles = [];
+let activeTab = 'educator';
+let activeThread = null;
+let messageSubscription = null;
+let appLoaded = false;
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+sb.auth.onAuthStateChange(async (event, session) => {
+  document.getElementById('screen-loading').style.display = 'none';
+  setDebug('Auth event: ' + event + (session?.user ? ' | user: ' + session.user.email : ' | no session'));
+  if (session?.user) {
+    // Prevent re-loading if app already showing
+    if (appLoaded && event !== 'SIGNED_OUT') return;
+    currentUser = session.user;
+    try {
+      setDebug('Loading profile for: ' + session.user.id);
+      await loadProfile(session.access_token);
+      if (!currentProfile) {
+        window.location.href = '/';
+        return;
+      }
+      setDebug('Profile loaded: ' + currentProfile.full_name + ' | role: ' + currentProfile.role);
+      appLoaded = true;
+      showApp();
+    } catch(e) {
+      console.error('Profile load error:', e);
+      setDebug('ERROR: ' + e.message);
+      window.location.href = '/';
+    }
+  } else {
+    currentUser = null;
+    currentProfile = null;
+    appLoaded = false;
+    window.location.href = '/';
+  }
+});
+
+function setDebug(msg) {
+  const el = document.getElementById('debug-msg');
+  if (el) { el.style.display = 'block'; el.textContent = msg; }
+  console.log('[DEBUG]', msg);
+}
+
+// ═══════════════════════════════════════════
+// LOGIN UI
+// ═══════════════════════════════════════════
+function switchTab(tab) {
+  activeTab = tab;
+  document.getElementById('tab-educator').classList.toggle('active', tab === 'educator');
+  document.getElementById('tab-student').classList.toggle('active', tab === 'student');
+  document.getElementById('invite-field').style.display = tab === 'student' ? 'block' : 'none';
+  clearMsg();
+}
+
+function showSignUp() {
+  document.getElementById('form-signin').style.display = 'none';
+  document.getElementById('form-signup').style.display = 'block';
+  document.getElementById('invite-field').style.display = activeTab === 'student' ? 'block' : 'none';
+  clearMsg();
+}
+
+function showSignIn() {
+  document.getElementById('form-signup').style.display = 'none';
+  document.getElementById('form-signin').style.display = 'block';
+  clearMsg();
+}
+
+function setMsg(text, type='error') {
+  const el = document.getElementById('auth-msg');
+  el.textContent = text;
+  el.className = 'msg-box ' + type;
+}
+function clearMsg() { document.getElementById('auth-msg').className = 'msg-box'; }
+
+// ═══════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════
+async function handleSignIn() {
+  const email = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  if (!email || !password) { setMsg('Please fill in all fields'); return; }
+  const btn = document.getElementById('signin-btn-text');
+  btn.innerHTML = '<span class="spinner"></span>';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    btn.textContent = 'Sign In';
+    setMsg(error.message);
+    return;
+  }
+  // onAuthStateChange will handle navigation
+  // but reset button in case it takes a moment
+  setTimeout(() => { btn.textContent = 'Sign In'; }, 3000);
+}
+
+async function handleSignUp() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const role = activeTab;
+  const inviteRaw = document.getElementById('signup-invite').value.trim().toUpperCase();
+
+  if (!name || !email || !password) { setMsg('Please fill in all fields'); return; }
+  if (role === 'student' && !inviteRaw) { setMsg('Please enter your invite code from your educator'); return; }
+
+  const btn = document.getElementById('signup-btn-text');
+  btn.innerHTML = '<span class="spinner"></span>';
+
+  try {
+    // Students: validate invite code using a direct REST call (bypasses RLS pre-auth)
+    if (role === 'student') {
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/profiles?invite_code=eq.${encodeURIComponent(inviteRaw)}&select=id,full_name`,
+        { headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' } }
+      );
+      const rows = await res.json();
+      if (!rows || rows.length === 0) {
+        btn.textContent = 'Create Account';
+        setMsg('Invalid invite code — double-check with your educator');
+        return;
+      }
+    }
+
+    const metadata = { full_name: name, role };
+    if (role === 'student' && inviteRaw) metadata.invite_code = inviteRaw;
+
+    const { error } = await sb.auth.signUp({
+      email, password,
+      options: { data: metadata }
+    });
+
+    btn.textContent = 'Create Account';
+    if (error) { setMsg(error.message); return; }
+    setMsg('Account created! You can now sign in.', 'success');
+    setTimeout(showSignIn, 2000);
+
+  } catch(e) {
+    btn.textContent = 'Create Account';
+    setMsg('Something went wrong: ' + e.message);
+    console.error('Signup error:', e);
+  }
+}
+
+async function handleSignOut() {
+  if (messageSubscription) { sb.removeChannel(messageSubscription); messageSubscription = null; }
+  await sb.auth.signOut();
+  window.location.href = '/#login';
+}
+
+// ═══════════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════════
+async function loadProfile(accessToken) {
+  setDebug('Querying profiles table...');
+
+  const res = await fetch(
+    `${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentUser.id}&select=*`,
+    {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+
+  if (!res.ok) {
+    const txt = await res.text();
+    setDebug('Profile fetch failed: ' + res.status + ' ' + txt);
+    throw new Error('Profile fetch failed: ' + res.status);
+  }
+
+  const rows = await res.json();
+  setDebug('Profile rows returned: ' + rows.length);
+
+  if (!rows || rows.length === 0) {
+    currentProfile = null;
+    allProfiles = [];
+    return;
+  }
+
+  currentProfile = rows[0];
+
+  // Load all profiles
+  const res2 = await fetch(
+    `${SUPABASE_URL}/rest/v1/profiles?select=*`,
+    {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + accessToken,
+        'Content-Type': 'application/json'
+      }
+    }
+  );
+  allProfiles = res2.ok ? await res2.json() : [];
+  setDebug('All profiles loaded: ' + allProfiles.length + ' | role: ' + currentProfile.role);
+}
+
+// ═══════════════════════════════════════════
+// SHOW APP
+// ═══════════════════════════════════════════
+function showLogin() {
+  window.location.href = '/';
+}
+
+function showApp() {
+  document.getElementById('screen-login').classList.remove('active');
+  document.getElementById('screen-app').classList.add('active');
+  setupAppForRole();
+  loadDashboard();
+  loadAnnouncements();
+  setupMessageThreads();
+  loadPeople();
+  subscribeToMessages();
+}
+
+function setupAppForRole() {
+  const role = getRole(currentProfile);
+  const name = currentProfile?.full_name || '';
+  document.getElementById('topbar-name').textContent = name;
+  document.getElementById('topbar-role').textContent = role;
+  document.getElementById('topbar-role').className = 'topbar-role role-badge-' + role;
+
+  // Educator-only: reference link in sidebar
+  if (role === 'educator' || role === 'manager') {
+    document.getElementById('sidebar-ref-section').style.display = 'block';
+  }
+  // Manager: show announcement form
+  if (role === 'manager') {
+    document.getElementById('ann-post-form').style.display = 'block';
+  }
+  // People label
+  if (role === 'student') {
+    document.getElementById('sidebar-people-label').textContent = 'My Educator';
+    document.getElementById('people-title').textContent = 'My Educator';
+    document.getElementById('people-sub').textContent = 'Your assigned educator';
+  } else if (role === 'educator') {
+    document.getElementById('sidebar-people-label').textContent = 'My Students';
+    document.getElementById('people-title').textContent = 'My Students';
+    document.getElementById('people-sub').textContent = 'Students assigned to you';
+  } else {
+    document.getElementById('sidebar-people-label').textContent = 'All Users';
+    document.getElementById('people-title').textContent = 'All Users';
+    document.getElementById('people-sub').textContent = 'Everyone in the program';
+  }
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function switchView(view) {
+  document.querySelectorAll('.panel-view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.mnav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + view)?.classList.add('active');
+  document.querySelectorAll('[data-view="' + view + '"]').forEach(el => el.classList.add('active'));
+  // close mobile sidebar
+  document.getElementById('sidebar').classList.remove('mobile-open');
+}
+
+function toggleMobileNav() {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+async function loadDashboard() {
+  const role = getRole(currentProfile);
+  const name = currentProfile?.full_name?.split(' ')[0] || 'there';
+  document.getElementById('dash-greeting').textContent = 'Welcome back, ' + name;
+  document.getElementById('dash-sub').textContent =
+    role === 'manager'  ? 'Manager Dashboard — ICU Core' :
+    role === 'educator' ? 'Educator Dashboard — ICU Core' :
+    'Student Dashboard — ICU Core';
+
+  document.getElementById('dash-student').style.display  = role === 'student'  ? 'block' : 'none';
+  document.getElementById('dash-educator').style.display = role === 'educator' ? 'block' : 'none';
+  document.getElementById('dash-manager').style.display  = role === 'manager'  ? 'block' : 'none';
+
+  if (role === 'student')  await loadStudentDash();
+  if (role === 'educator') await loadEducatorDash();
+  if (role === 'manager')  await loadManagerDash();
+}
+
+async function loadStudentDash() {
+  const educator = allProfiles.find(p => p.id === currentProfile?.educator_id);
+  document.getElementById('dash-student-stats').innerHTML = `
+    <div class="stat-card">
+      <div class="sc-label">My Educator</div>
+      <div class="sc-val" style="font-size:20px;margin-top:4px">${esc(educator?.full_name || '—')}</div>
+      <div class="sc-sub">${educator ? 'Your assigned educator' : 'Not yet assigned'}</div>
+    </div>
+    <div class="stat-card">
+      <div class="sc-label">Status</div>
+      <div class="sc-val" style="font-size:20px;margin-top:4px;color:var(--accent2)">Active</div>
+      <div class="sc-sub">ICU Core Program</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(59,158,255,.3);cursor:pointer" onclick="window.location.href='/icu/toc/'">
+      <div class="sc-label">Training</div>
+      <div class="sc-val" style="font-size:20px;margin-top:4px;color:var(--accent)">Open →</div>
+      <div class="sc-sub">ICU Training Manual</div>
+    </div>
+  `;
+  try {
+    const session = await sb.auth.getSession();
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/topic_progress?student_id=eq.${currentProfile.id}&select=topic_name`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + session.data.session.access_token, 'Content-Type': 'application/json' } }
+    );
+    const rows = res.ok ? await res.json() : [];
+    const completed = rows.length, total = 110;
+    const pct = Math.round((completed / total) * 100);
+    document.getElementById('dash-student-progress').innerHTML = `
+      <div class="student-card" style="flex-direction:column;align-items:flex-start;gap:12px">
+        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+          <div style="font-size:14px;color:var(--text-mid)">Topics Completed</div>
+          <div style="font-family:var(--mono);font-size:22px;color:var(--accent2)">${pct}%</div>
+        </div>
+        <div style="width:100%">
+          <div class="student-progress-bar" style="height:8px"><div class="student-progress-fill" style="width:${pct}%"></div></div>
+          <div class="student-pct" style="margin-top:6px">${completed} of ${total} topics complete</div>
+        </div>
+      </div>`;
+  } catch(e) {
+    document.getElementById('dash-student-progress').innerHTML = '<div class="empty-state"><div class="es-icon">📊</div><p>Could not load progress</p></div>';
+  }
+}
+
+async function loadEducatorDash() {
+  const myStudent = allProfiles.find(p => p.role === 'student' && p.educator_id === currentProfile.id);
+  document.getElementById('dash-educator-stats').innerHTML = `
+    <div class="stat-card">
+      <div class="sc-label">My Student</div>
+      <div class="sc-val" style="font-size:20px;margin-top:4px">${myStudent ? esc(myStudent.full_name) : '—'}</div>
+      <div class="sc-sub">${myStudent ? 'Currently enrolled' : 'No student connected'}</div>
+    </div>
+    <div class="stat-card" style="border-color:rgba(59,158,255,.3);cursor:pointer" onclick="window.location.href='/icu/toc/'">
+      <div class="sc-label">Training</div>
+      <div class="sc-val" style="font-size:20px;margin-top:4px;color:var(--accent)">Open →</div>
+      <div class="sc-sub">ICU Core Manual</div>
+    </div>
+  `;
+  const studentEl = document.getElementById('dash-educator-student');
+  if (!myStudent) {
+    studentEl.innerHTML = '<div class="empty-state"><div class="es-icon">🎓</div><p>No student connected yet. Share your access code below.</p></div>';
+  } else {
+    let completed = 0;
+    try {
+      const session = await sb.auth.getSession();
+      const res = await fetch(
+        `${SUPABASE_URL}/rest/v1/topic_progress?student_id=eq.${myStudent.id}&select=topic_name`,
+        { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + session.data.session.access_token, 'Content-Type': 'application/json' } }
+      );
+      if (res.ok) { const rows = await res.json(); completed = rows.length; }
+    } catch(e) {}
+    const pct = Math.round((completed / 110) * 100);
+    studentEl.innerHTML = `
+      <div class="student-card">
+        <div class="student-avatar">${(myStudent.full_name||'?')[0]}</div>
+        <div class="student-info">
+          <div class="student-name">${esc(myStudent.full_name)}</div>
+          <div class="student-meta">Student</div>
+          <div class="student-progress-bar"><div class="student-progress-fill" style="width:${pct}%"></div></div>
+          <div class="student-pct">${completed} / 110 topics — ${pct}% complete</div>
+        </div>
+        <button class="btn-copy" onclick="switchView('messages')" style="background:rgba(34,211,165,.1);border-color:rgba(34,211,165,.25);color:var(--accent2)">Message</button>
+      </div>`;
+  }
+  const codeEl = document.getElementById('dash-educator-code');
+  try {
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/access_codes?created_by=eq.${currentProfile.id}&role=eq.student&is_used=eq.false&select=code,created_at&order=created_at.desc&limit=1`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' } }
+    );
+    const rows = res.ok ? await res.json() : [];
+    if (rows && rows.length > 0) {
+      const code = rows[0].code;
+      codeEl.innerHTML = `
+        <div class="code-card">
+          <div><div class="code-value">${esc(code)}</div><div class="code-meta">Single-use · Share with your student to register</div></div>
+          <button class="btn-copy" onclick="navigator.clipboard.writeText('${esc(code)}').then(()=>showToast('Code copied!'))">Copy Code</button>
+        </div>`;
+    } else if (myStudent) {
+      codeEl.innerHTML = '<div class="empty-state"><div class="es-icon">✅</div><p>Your student has already used their code.</p></div>';
+    } else {
+      codeEl.innerHTML = `
+        <div class="code-card" style="border-color:var(--border);flex-direction:column;align-items:flex-start;gap:14px">
+          <div style="font-size:13px;color:var(--text-mid)">No active code. Generate one to invite your student.</div>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;width:100%">
+            <div style="flex:1;min-width:180px">
+              <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Student Email (optional)</div>
+              <input type="email" id="student-email-input" placeholder="student@email.com"
+                style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--sans);font-size:13px;outline:none">
+            </div>
+            <button class="btn-copy" onclick="generateStudentCode()">Generate Code</button>
+          </div>
+        </div>
+      `;
+    }
+  } catch(e) {
+    codeEl.innerHTML = '<div class="empty-state"><div class="es-icon">🔑</div><p>Could not load code</p></div>';
+  }
+}
+
+async function generateStudentCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 8; i++) { if (i === 4) code += '-'; code += chars[Math.floor(Math.random() * chars.length)]; }
+  const studentEmail = document.getElementById('student-email-input')?.value.trim() || '';
+
+  try {
+    const session = await sb.auth.getSession();
+    const token = session.data.session.access_token;
+
+    // Insert into access_codes table
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/access_codes`, {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ code, role: 'student', created_by: currentProfile.id, is_used: false })
+    });
+
+    if (!res.ok) { const err = await res.text(); showToast('Error: ' + err); return; }
+
+    // Save to educator's profile invite_code
+    await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentProfile.id}`, {
+      method: 'PATCH',
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ invite_code: code })
+    });
+
+    // Send email if provided
+    if (studentEmail) {
+      await sendStudentInviteEmail(studentEmail, code);
+    }
+
+    showToast(studentEmail ? 'Code generated & email sent!' : 'Code generated!');
+    loadEducatorDash();
+  } catch(e) { showToast('Error: ' + e.message); }
+}
+
+async function sendStudentInviteEmail(email, code) {
+  const signupLink = 'https://larolabs.com/#signup-student';
+  const educatorName = currentProfile?.full_name || 'Your educator';
+  try {
+    await fetch('https://uadyjsagkbikprlplkbn.supabase.co/functions/v1/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec' },
+      body: JSON.stringify({
+        to: [email],
+        subject: "You've been invited to ICU Core",
+        html: `
+          <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px;background:#f8faff">
+            <div style="background:#070d1a;border-radius:12px;padding:32px;color:#e8eef7">
+              <div style="font-size:22px;font-weight:700;margin-bottom:8px">ICU <span style="color:#3b9eff">Core</span></div>
+              <div style="font-size:13px;color:#7a9bbf;margin-bottom:24px;text-transform:uppercase;letter-spacing:0.1em">Western Arizona Regional</div>
+              <p style="font-size:15px;color:#c5d8ff;margin-bottom:16px"><strong style="color:#e8eef7">${esc(educatorName)}</strong> has invited you to join ICU Core as a <strong style="color:#e8eef7">Student</strong>.</p>
+              <p style="font-size:14px;color:#7a9bbf;margin-bottom:24px">Use the access code below to create your account:</p>
+              <div style="background:#0e1829;border:1px solid #3b9eff;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
+                <div style="font-family:monospace;font-size:28px;letter-spacing:0.2em;color:#3b9eff">${code}</div>
+                <div style="font-size:12px;color:#7a9bbf;margin-top:8px">Single-use access code</div>
+              </div>
+              <a href="${signupLink}" style="display:block;background:#3b9eff;color:#fff;text-align:center;padding:14px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px">Create Your Account →</a>
+              <p style="font-size:12px;color:#3d5a7a;margin-top:24px;text-align:center">This code can only be used once. Contact your educator if you have questions.</p>
+            </div>
+          </div>
+        `
+      })
+    });
+  } catch(e) { console.error('Email send failed:', e); }
+}
+
+// Also notify educator when student signs up — called after successful signup
+// This runs on the landing page after account creation
+
+async function loadManagerDash() {
+  const educators = allProfiles.filter(p => p.role === 'educator' || p.role === 'admin');
+  const students  = allProfiles.filter(p => p.role === 'student');
+  document.getElementById('dash-manager-stats').innerHTML = `
+    <div class="stat-card"><div class="sc-label">Educators</div><div class="sc-val">${educators.length}</div><div class="sc-sub">Active in program</div></div>
+    <div class="stat-card"><div class="sc-label">Students</div><div class="sc-val" style="color:var(--accent2)">${students.length}</div><div class="sc-sub">Currently enrolled</div></div>
+    <div class="stat-card"><div class="sc-label">Connections</div><div class="sc-val" style="color:var(--accent)">${students.filter(s=>s.educator_id).length}</div><div class="sc-sub">Educator ↔ Student pairs</div></div>
+  `;
+  const listEl = document.getElementById('dash-manager-list');
+  if (!educators.length) { listEl.innerHTML = '<div class="empty-state"><div class="es-icon">👥</div><p>No educators yet</p></div>'; return; }
+  let allProgress = [];
+  try {
+    const session = await sb.auth.getSession();
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/topic_progress?select=student_id,topic_name`,
+      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + session.data.session.access_token, 'Content-Type': 'application/json' } });
+    if (res.ok) allProgress = await res.json();
+  } catch(e) {}
+  listEl.innerHTML = educators.map(edu => {
+    const student = students.find(s => s.educator_id === edu.id);
+    let studentHTML = student ? (() => {
+      const completed = allProgress.filter(p => p.student_id === student.id).length;
+      const pct = Math.round((completed / 110) * 100);
+      return `<div class="student-card" style="padding:14px 16px">
+        <div class="student-avatar" style="width:34px;height:34px;font-size:15px">${(student.full_name||'?')[0]}</div>
+        <div class="student-info">
+          <div class="student-name" style="font-size:13px">${esc(student.full_name)}</div>
+          <div class="student-progress-bar" style="margin-top:6px"><div class="student-progress-fill" style="width:${pct}%"></div></div>
+          <div class="student-pct">${completed}/110 · ${pct}%</div>
+        </div>
+      </div>`;
+    })() : '<div class="no-student-msg">No student connected</div>';
+    return `<div class="educator-row">
+      <div class="educator-row-header">
+        <div class="educator-avatar">${(edu.full_name||'?')[0]}</div>
+        <div class="educator-name">${esc(edu.full_name)}</div>
+        <div class="educator-badge">Educator</div>
+      </div>
+      ${studentHTML}
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════
+// ANNOUNCEMENTS
+// ═══════════════════════════════════════════
+async function loadAnnouncements() {
+  const { data } = await sb.from('announcements').select('*, profiles(full_name)').order('created_at', { ascending: false });
+  const el = document.getElementById('ann-list');
+  if (!data || data.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">📢</div><p>No announcements yet</p></div>';
+    return;
+  }
+  el.innerHTML = data.map(a => `
+    <div class="announcement-card">
+      <div class="ann-header">
+        <div class="ann-title">${esc(a.title)}</div>
+        <div class="ann-date">${fmtDate(a.created_at)}</div>
+      </div>
+      <div class="ann-body">${esc(a.body)}</div>
+      <div class="ann-author">— ${esc(a.profiles?.full_name || 'Management')}</div>
+    </div>
+  `).join('');
+}
+
+async function postAnnouncement() {
+  const title = document.getElementById('ann-title-input').value.trim();
+  const body = document.getElementById('ann-body-input').value.trim();
+  if (!title || !body) { showToast('Please fill in title and body'); return; }
+  const { error } = await sb.from('announcements').insert({ author_id: currentProfile.id, title, body });
+  if (error) { showToast('Error posting: ' + error.message); return; }
+  document.getElementById('ann-title-input').value = '';
+  document.getElementById('ann-body-input').value = '';
+  showToast('Announcement posted ✓');
+  loadAnnouncements();
+}
+
+// ═══════════════════════════════════════════
+// MESSAGING
+// ═══════════════════════════════════════════
+function getThreads() {
+  const role = getRole(currentProfile);
+  const threads = [];
+
+  if (role === 'manager') {
+    // Manager can message all educators
+    allProfiles.filter(p => p.role === 'educator' || p.role === 'admin').forEach(e => {
+      threads.push({ id: e.id, name: e.full_name, type: 'dm', role: 'educator' });
+    });
+  } else if (role === 'educator') {
+    // Educator: lounge (educator-to-educator), + their student(s), + manager
+    threads.push({ id: 'educator-lounge', name: 'Educator Lounge', type: 'group', role: null });
+    allProfiles.filter(p => p.educator_id === currentProfile.id).forEach(s => {
+      threads.push({ id: s.id, name: s.full_name, type: 'dm', role: 'student' });
+    });
+    const mgr = allProfiles.find(p => p.role === 'manager');
+    if (mgr) threads.push({ id: mgr.id, name: mgr.full_name + ' (Manager)', type: 'dm', role: 'manager' });
+  } else {
+    // Student: their educator only
+    const educator = allProfiles.find(p => p.id === currentProfile?.educator_id);
+    if (educator) threads.push({ id: educator.id, name: educator.full_name + ' (Educator)', type: 'dm', role: 'educator' });
+  }
+  return threads;
+}
+
+function setupMessageThreads() {
+  const threads = getThreads();
+  const el = document.getElementById('msg-thread-list');
+  if (!el) return;
+  if (threads.length === 0) {
+    el.innerHTML = '<div style="padding:16px;font-size:12px;color:var(--text-dim)">No conversations yet</div>';
+    return;
+  }
+
+  // Store threads globally so onclick can reference them
+  window._threads = threads;
+
+  el.innerHTML = '<div class="msg-thread-label">Conversations</div>' +
+    threads.map((t, i) => `
+      <div class="msg-thread-item" data-idx="${i}" data-thread="${t.id}"
+           onclick="window._threadClick(${i})"
+           style="cursor:pointer">
+        <div class="mt-name">${esc(t.name)}</div>
+        <div class="mt-preview">${t.type === 'group' ? 'Group chat' : 'Direct message'}</div>
+      </div>
+    `).join('');
+}
+
+window._threadClick = function(idx) {
+  const t = window._threads[idx];
+  if (!t) return;
+  openThread(t.id, t.name, t.type);
+};
+
+async function openThread(threadId, name, type) {
+  activeThread = { id: threadId, name, type };
+  document.querySelectorAll('.msg-thread-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.thread === threadId);
+  });
+  document.getElementById('msg-header').textContent = name;
+  document.getElementById('msg-input-row').style.display = 'flex';
+  await loadMessages(threadId, type);
+}
+
+async function loadMessages(threadId, type) {
+  let query = sb.from('messages').select('*, profiles(full_name)').order('created_at', { ascending: true });
+  if (threadId === 'educator-lounge') {
+    query = query.eq('thread', 'educator-lounge');
+  } else {
+    // DMs between current user and the other person
+    query = query.or(
+      `and(sender_id.eq.${currentProfile.id},recipient_id.eq.${threadId}),and(sender_id.eq.${threadId},recipient_id.eq.${currentProfile.id})`
+    );
+  }
+  const { data } = await query;
+  renderMessages(data || []);
+}
+
+function renderMessages(msgs) {
+  const el = document.getElementById('msg-body');
+  if (msgs.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">💬</div><p>No messages yet — say hello!</p></div>';
+    return;
+  }
+  el.innerHTML = msgs.map(m => {
+    const mine = m.sender_id === currentProfile.id;
+    const initials = (m.profiles?.full_name || '?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+    return `
+      <div class="msg-bubble-wrap ${mine ? 'mine' : ''}">
+        ${!mine ? `<div class="msg-avatar">${initials}</div>` : ''}
+        <div>
+          <div class="msg-bubble ${mine ? 'mine' : 'theirs'}">${esc(m.body)}</div>
+          <div class="msg-meta ${mine ? '' : 'theirs'}">${fmtTime(m.created_at)}</div>
+        </div>
+        ${mine ? `<div class="msg-avatar">${initials}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendMessage() {
+  if (!activeThread) return;
+  const input = document.getElementById('msg-input');
+  const body = input.value.trim();
+  if (!body) return;
+  input.value = '';
+
+  const msg = {
+    sender_id: currentProfile.id,
+    body,
+    thread: activeThread.id === 'educator-lounge' ? 'educator-lounge' : null,
+    recipient_id: activeThread.id === 'educator-lounge' ? null : activeThread.id
+  };
+
+  const { error } = await sb.from('messages').insert(msg);
+  if (error) showToast('Failed to send');
+  else await loadMessages(activeThread.id, activeThread.type);
+}
+
+function subscribeToMessages() {
+  if (messageSubscription) sb.removeChannel(messageSubscription);
+  messageSubscription = sb.channel('messages-live')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async () => {
+      if (activeThread) await loadMessages(activeThread.id, activeThread.type);
+      document.getElementById('badge-msg').classList.add('show');
+    })
+    .subscribe();
+}
+
+// ═══════════════════════════════════════════
+// PEOPLE
+// ═══════════════════════════════════════════
+function loadPeople() {
+  const role = getRole(currentProfile);
+  let people = [];
+  if (role === 'manager') {
+    people = allProfiles.filter(p => p.id !== currentProfile.id);
+  } else if (role === 'educator') {
+    people = allProfiles.filter(p => p.educator_id === currentProfile.id);
+  } else {
+    const educator = allProfiles.find(p => p.id === currentProfile?.educator_id);
+    if (educator) people = [educator];
+  }
+
+  const el = document.getElementById('people-list');
+  if (people.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="es-icon">👥</div><p>No people yet</p></div>';
+    return;
+  }
+  el.innerHTML = people.map(p => `
+    <div class="person-card">
+      <div class="person-avatar">${(p.full_name||'?')[0]}</div>
+      <div class="person-info">
+        <div class="person-name">${esc(p.full_name)}</div>
+        <div class="person-role">${p.role}</div>
+      </div>
+      <button class="person-msg-btn" onclick="goMessage('${p.id}','${esc(p.full_name)}')">Message</button>
+    </div>
+  `).join('');
+}
+
+function goMessage(userId, name) {
+  switchView('messages');
+  setupMessageThreads();
+  setTimeout(() => openThread(userId, name, 'dm'), 150);
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function esc(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+}
+function fmtTime(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+</script>
+</body>
+</html>
