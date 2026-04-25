@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v24 abg-clear-btn -->
+<!-- v29 email-btn-pos-fix -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -383,7 +383,6 @@ body::before {
     font-size: 17px;
     font-weight: 700;
     color: var(--text);
-    flex: 1;
   }
   .desktop-content-cat {
     font-family: var(--mono);
@@ -818,10 +817,11 @@ mark { background: rgba(56,189,248,.2); color: var(--accent); border-radius: 2px
     <input type="text" id="toc-search" placeholder="Search topics..." autocomplete="off" style="padding-right:28px">
     <button class="search-clear" id="search-clear-btn" onclick="clearSearch()" title="Clear search">✕</button>
   </div>
-  <div class="progress-pill">
+  <div class="progress-pill" id="progress-pill">
     <div class="progress-dot"></div>
     <span id="progress-text">0 / 104 complete</span>
-    <div class="user-bar" id="user-bar" style="display:none">
+  </div>
+  <div class="user-bar" id="user-bar" style="display:none">
     <span class="u-role" id="u-role"></span>
     <span class="u-name" id="u-name"></span>
     <button class="signout-btn" onclick="doSignOut()">sign out</button>
@@ -1186,6 +1186,7 @@ mark { background: rgba(56,189,248,.2); color: var(--accent); border-radius: 2px
     <!-- Category grid view -->
     <div class="cat-grid-view" id="cat-grid-view">
       <div class="cat-grid-header">
+        <button class="desktop-back-btn" onclick="showWelcome()" style="margin-right:8px">&#8592; Back</button>
         <div class="cat-grid-icon" id="cat-grid-icon">📋</div>
         <div style="flex:1;min-width:0">
           <div class="cat-grid-title" id="cat-grid-title">Category</div>
@@ -1200,8 +1201,14 @@ mark { background: rgba(56,189,248,.2); color: var(--accent); border-radius: 2px
       <div class="desktop-content-header">
         <button class="desktop-back-btn" onclick="showCategoryGrid()">&#8592; Back</button>
         <div class="desktop-content-icon" id="desktop-content-icon">📋</div>
-        <div style="flex:1;min-width:0">
-          <div class="desktop-content-title" id="desktop-content-title">Topic</div>
+        <div style="flex:1;min-width:0;overflow:visible">
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <div class="desktop-content-title" id="desktop-content-title" style="flex-shrink:0">Topic</div>
+            <button id="desktop-email-btn" onclick="emailCard()" title="Email this card"
+              style="display:none;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.4);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:13px;color:#38bdf8;font-family:var(--mono);letter-spacing:.05em;white-space:nowrap;flex-shrink:0">
+              🖨 Email Card
+            </button>
+          </div>
           <div class="desktop-content-cat" id="desktop-content-cat">Category</div>
         </div>
       </div>
@@ -13859,6 +13866,8 @@ function openABGAnalyzer() {
     document.getElementById('desktop-content-icon').textContent = '🧪';
     document.getElementById('desktop-content-title').textContent = 'ABG Analyzer';
     document.getElementById('desktop-content-cat').textContent = 'ABGs';
+    const abgEmailBtn = document.getElementById('desktop-email-btn');
+    if (abgEmailBtn) abgEmailBtn.style.display = 'none';
     document.getElementById('desktop-content-body').innerHTML = htmlContent;
     updateUserBar();
     document.getElementById('content-welcome').style.display = 'none';
@@ -14040,8 +14049,15 @@ function updateUserBar() {
   const bar = document.getElementById('user-bar');
   bar.style.display = 'flex';
   document.getElementById('u-name').textContent = currentProfile.full_name;
-  document.getElementById('u-role').textContent = currentProfile.role;
-  document.getElementById('u-role').className = 'u-role role-' + currentProfile.role;
+  // admin displays as educator in TOC
+  const displayRole = currentProfile.role === 'admin' ? 'educator' : currentProfile.role;
+  document.getElementById('u-role').textContent = displayRole.toUpperCase();
+  document.getElementById('u-role').className = 'u-role role-' + displayRole;
+  // Only show progress counter for students
+  const progressPill = document.getElementById('progress-pill');
+  if (progressPill) {
+    progressPill.style.display = currentProfile.role === 'student' ? '' : 'none';
+  }
 }
 
 async function doLogin() {
@@ -14242,6 +14258,12 @@ function openCategory(catEl, btnEl, icon, name) {
   showCategoryGrid();
 }
 
+function showWelcome() {
+  document.getElementById('cat-grid-view').classList.remove('active');
+  document.getElementById('desktop-content-area').classList.remove('active');
+  document.getElementById('content-welcome').style.display = '';
+}
+
 function showCategoryGrid() {
   if (!currentCategoryData) return;
   const { catEl, icon, name, meta } = currentCategoryData;
@@ -14305,18 +14327,9 @@ async function openTopic(name, category, icon) {
     document.getElementById('desktop-content-cat').textContent = category;
     document.getElementById('desktop-content-body').innerHTML = htmlContent;
     updateUserBar();
-    // Add/update email button in desktop header
-    let emailBtn = document.getElementById('desktop-email-btn');
-    if (!emailBtn) {
-      emailBtn = document.createElement('button');
-      emailBtn.id = 'desktop-email-btn';
-      emailBtn.title = 'Email this card';
-      emailBtn.innerHTML = '🖨';
-      emailBtn.style.cssText = 'background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);border-radius:8px;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#38bdf8;position:absolute;top:16px;right:16px;z-index:10';
-      emailBtn.onclick = emailCard;
-      const contentArea = document.getElementById('desktop-content-area');
-      if (contentArea) { contentArea.style.position = 'relative'; contentArea.appendChild(emailBtn); }
-    }
+    // Show email button next to title
+    const emailBtn = document.getElementById('desktop-email-btn');
+    if (emailBtn) emailBtn.style.display = 'inline-flex';
 
     // Show topic view, hide others
     document.getElementById('content-welcome').style.display = 'none';
