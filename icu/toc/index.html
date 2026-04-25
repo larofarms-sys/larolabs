@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- v18 polling-fix -->
+<!-- v24 abg-clear-btn -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -853,6 +853,7 @@ mark { background: rgba(56,189,248,.2); color: var(--accent); border-radius: 2px
       </div>
       <div class="subcategory-list">
         <div class="sub-grid">
+          <div class="sub-item" onclick="openABGAnalyzer()" style="border-left:2px solid #34d399"><div class="sub-dot" style="background:#34d399"></div><div class="sub-name">🧮 ABG Analyzer</div></div>
           <div class="sub-item" onclick="openTopic('Compensation','ABGs','🧪')"><div class="sub-dot" style="background:#2e4a65"></div><div class="sub-name">Compensation</div></div>
           <div class="sub-item" onclick="openTopic('Metabolic Acidosis','ABGs','🧪')"><div class="sub-dot" style="background:#2e4a65"></div><div class="sub-name">Metabolic Acidosis</div></div>
           <div class="sub-item" onclick="openTopic('Metabolic Alkalosis','ABGs','🧪')"><div class="sub-dot" style="background:#2e4a65"></div><div class="sub-name">Metabolic Alkalosis</div></div>
@@ -13702,27 +13703,304 @@ let progressMap = {};
 let qccMap = {};
 let realtimeSub = null;
 
+function clearABG() {
+  document.getElementById('abg-ph').value = '';
+  document.getElementById('abg-co2').value = '';
+  document.getElementById('abg-hco3').value = '';
+  const result = document.getElementById('abg-result');
+  if (result) { result.style.display = 'none'; result.innerHTML = ''; }
+}
+
 // ═══════════════════════════════════════
 // AUTH INIT
 // ═══════════════════════════════════════
+function showToast(msg) {
+  let toast = document.getElementById('toast-msg');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-msg';
+    toast.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#0c1e35;border:1px solid #1e3a5f;color:#e1eaf5;font-family:JetBrains Mono,monospace;font-size:13px;padding:12px 24px;border-radius:10px;z-index:99999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._hide);
+  toast._hide = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+}
+
 async function emailCard() {
   if (!currentUser) { showToast('Please sign in'); return; }
-  const bodyEl = document.getElementById('modal-body');
+  // Get content from desktop or mobile view
+  const isDesktop = window.innerWidth >= 900;
+  const bodyEl = isDesktop
+    ? document.getElementById('desktop-content-body')
+    : document.getElementById('modal-body');
   if (!bodyEl) return;
-  const cardHTML = bodyEl.innerHTML;
-  const topicName = document.getElementById('modal-title') ? document.getElementById('modal-title').textContent : 'ICU Topic';
-  const category = document.getElementById('modal-cat') ? document.getElementById('modal-cat').textContent : '';
+  // Convert dark theme to light for email/print
+  let cardHTML = bodyEl.innerHTML;
+  // Dark backgrounds -> white
+  const darkBgs = ['#060b14','#060e1a','#0a1628','#0b1a2e','#0c1523','#0c1a2e','#0d1f35','#0f2744','#111f30','#142840','#1a3050','#1e2d45','#1e3a58','#1e3a5a','#2d1212','#2a1010','#2d0f0f','#0b2d25','#085041','#1a0a0a','#1e1212','#1e1535','#2d1a0a','#1a1f0a','#1e1a08','#1e1d0a','#1a2a1a','#1e3a1e','#2a2400','#412402','#633806'];
+  darkBgs.forEach(c => { cardHTML = cardHTML.split(c).join('#ffffff'); });
+  // Dark borders -> light grey
+  const darkBorders = ['#192d45','#1e3a5f','#1a3050','#2e4a65','#3d6a9a','#4a6a8a','#4a7ab5'];
+  darkBorders.forEach(c => { cardHTML = cardHTML.split(c).join('#e2e8f0'); });
+  // Light text -> black
+  const lightTexts = ['#e1eaf5','#e8eef7','#d1dce8','#c8d8e8','#b0c4d8'];
+  lightTexts.forEach(c => { cardHTML = cardHTML.split(c).join('#000000'); });
+  // Mid grey text -> dark grey
+  cardHTML = cardHTML.split('#4a6a8a').join('#555555');
+  cardHTML = cardHTML.split('#7a9bbf').join('#555555');
+  const topicName = isDesktop
+    ? (document.getElementById('desktop-content-title') ? document.getElementById('desktop-content-title').textContent : 'ICU Topic')
+    : (document.getElementById('modal-title') ? document.getElementById('modal-title').textContent : 'ICU Topic');
+  const category = isDesktop
+    ? (document.getElementById('desktop-content-cat') ? document.getElementById('desktop-content-cat').textContent : '')
+    : (document.getElementById('modal-cat') ? document.getElementById('modal-cat').textContent : '');
   showToast('Sending to your email...');
   try {
     const res = await fetch('https://uadyjsagkbikprlplkbn.supabase.co/functions/v1/send-email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec' },
-      body: JSON.stringify({ to: [currentUser.email], subject: 'ICU Core: ' + topicName, html: '<div style="font-family:sans-serif;max-width:700px;margin:0 auto;padding:24px"><div style="background:#070d1a;border-radius:12px;padding:24px;color:#e8eef7;margin-bottom:16px"><div style="font-size:18px;font-weight:700">ICU <span style="color:#3b9eff">Core</span></div><div style="font-size:11px;color:#7a9bbf;text-transform:uppercase">' + category + '</div><div style="font-size:22px;font-weight:700;margin-top:12px">' + topicName + '</div></div><div style="background:#fff;border-radius:12px;padding:24px;border:1px solid #e2e8f0">' + cardHTML + '</div></div>' })
+      body: JSON.stringify({ to: [currentUser.email], subject: 'ICU Core: ' + topicName, html: '<div style="font-family:sans-serif;max-width:700px;margin:0 auto;padding:24px;background:#ffffff"><div style="background:#ffffff;border-bottom:2px solid #e2e8f0;padding-bottom:16px;margin-bottom:16px"><div style="font-size:18px;font-weight:700;color:#000000">ICU <span style="color:#0284c7">Core</span></div><div style="font-size:11px;color:#555555;text-transform:uppercase;margin-top:4px">' + category + '</div><div style="font-size:22px;font-weight:700;margin-top:8px;color:#000000">' + topicName + '</div></div><div style="background:#ffffff;border-radius:8px;border:1px solid #e2e8f0;padding:24px">' + cardHTML + '</div></div>' })
     });
     if (res.ok) { showToast('Sent to ' + currentUser.email + ' âœ“'); }
     else { showToast('Failed to send'); }
   } catch(e) { showToast('Error: ' + e.message); }
 }
+
+// ═══════════════════════════════════════
+// ABG ANALYZER
+// ═══════════════════════════════════════
+function openABGAnalyzer() {
+  const htmlContent = `
+  <div style="font-family:'Inter',sans-serif;color:#e1eaf5;padding:4px">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#34d399;letter-spacing:.1em;margin-bottom:16px">ABG ANALYZER — TIC TAC TOE METHOD</div>
+
+    <!-- Tic Tac Toe Grid -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-bottom:20px;border:1px solid #192d45;border-radius:8px;overflow:hidden">
+      <div style="background:#0c1523;padding:12px;text-align:center;border-right:1px solid #192d45;border-bottom:1px solid #192d45">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a6a8a;letter-spacing:.1em;margin-bottom:4px">pH</div>
+        <div style="font-size:13px;font-weight:600;color:#38bdf8">7.35 – 7.45</div>
+      </div>
+      <div style="background:#0c1523;padding:12px;text-align:center;border-right:1px solid #192d45;border-bottom:1px solid #192d45">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a6a8a;letter-spacing:.1em;margin-bottom:4px">PaCO₂</div>
+        <div style="font-size:13px;font-weight:600;color:#38bdf8">35 – 45 mmHg</div>
+      </div>
+      <div style="background:#0c1523;padding:12px;text-align:center;border-bottom:1px solid #192d45">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a6a8a;letter-spacing:.1em;margin-bottom:4px">HCO₃</div>
+        <div style="font-size:13px;font-weight:600;color:#38bdf8">22 – 26 mEq/L</div>
+      </div>
+      <div style="background:#111f30;padding:10px;text-align:center;border-right:1px solid #192d45;border-bottom:1px solid #192d45">
+        <div style="font-size:11px;color:#f87171">↓ &lt; 7.35</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">Acidosis</div>
+      </div>
+      <div style="background:#111f30;padding:10px;text-align:center;border-right:1px solid #192d45;border-bottom:1px solid #192d45">
+        <div style="font-size:11px;color:#f87171">↑ &gt; 45</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">Acidosis</div>
+      </div>
+      <div style="background:#111f30;padding:10px;text-align:center;border-bottom:1px solid #192d45">
+        <div style="font-size:11px;color:#f87171">↓ &lt; 22</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">Acidosis</div>
+      </div>
+      <div style="background:#111f30;padding:10px;text-align:center;border-right:1px solid #192d45">
+        <div style="font-size:11px;color:#34d399">↑ &gt; 7.45</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">Alkalosis</div>
+      </div>
+      <div style="background:#111f30;padding:10px;text-align:center;border-right:1px solid #192d45">
+        <div style="font-size:11px;color:#34d399">↓ &lt; 35</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">Alkalosis</div>
+      </div>
+      <div style="background:#111f30;padding:10px;text-align:center">
+        <div style="font-size:11px;color:#34d399">↑ &gt; 26</div>
+        <div style="font-size:10px;color:#4a6a8a;margin-top:2px">Alkalosis</div>
+      </div>
+    </div>
+
+    <!-- Input Fields -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a6a8a;letter-spacing:.1em;margin-bottom:6px">pH</div>
+        <input id="abg-ph" type="number" step="0.01" min="6.8" max="7.8" placeholder="7.40"
+          style="width:100%;background:#0c1523;border:1px solid #192d45;border-radius:8px;padding:10px;color:#e1eaf5;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='#38bdf8'" onblur="this.style.borderColor='#192d45'">
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a6a8a;letter-spacing:.1em;margin-bottom:6px">PaCO₂</div>
+        <input id="abg-co2" type="number" step="0.1" min="10" max="100" placeholder="40"
+          style="width:100%;background:#0c1523;border:1px solid #192d45;border-radius:8px;padding:10px;color:#e1eaf5;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='#38bdf8'" onblur="this.style.borderColor='#192d45'">
+      </div>
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a6a8a;letter-spacing:.1em;margin-bottom:6px">HCO₃</div>
+        <input id="abg-hco3" type="number" step="0.1" min="5" max="50" placeholder="24"
+          style="width:100%;background:#0c1523;border:1px solid #192d45;border-radius:8px;padding:10px;color:#e1eaf5;font-family:'JetBrains Mono',monospace;font-size:14px;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='#38bdf8'" onblur="this.style.borderColor='#192d45'">
+      </div>
+    </div>
+
+    <!-- Analyze / Clear Buttons -->
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:16px">
+      <button onclick="analyzeABG()"
+        style="padding:14px;border-radius:10px;border:none;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:#38bdf8;color:#060b14">
+        Analyze ABG
+      </button>
+      <button onclick="clearABG()"
+        style="padding:14px 20px;border-radius:10px;border:1px solid #192d45;font-family:'Syne',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:transparent;color:#4a6a8a">
+        Clear
+      </button>
+    </div>
+
+    <!-- Result -->
+    <div id="abg-result" style="display:none;background:#0c1523;border-radius:10px;padding:16px;border:1px solid #192d45"></div>
+  </div>`;
+
+  const isDesktop = window.innerWidth >= 900;
+  if (isDesktop) {
+    document.getElementById('desktop-content-icon').textContent = '🧪';
+    document.getElementById('desktop-content-title').textContent = 'ABG Analyzer';
+    document.getElementById('desktop-content-cat').textContent = 'ABGs';
+    document.getElementById('desktop-content-body').innerHTML = htmlContent;
+    updateUserBar();
+    document.getElementById('content-welcome').style.display = 'none';
+    document.getElementById('cat-grid-view').classList.remove('active');
+    document.getElementById('desktop-content-area').classList.add('active');
+    document.getElementById('content-panel').scrollTop = 0;
+  } else {
+    document.getElementById('modal-title').textContent = 'ABG Analyzer';
+    document.getElementById('modal-cat').textContent = 'ABGs';
+    document.getElementById('modal-icon').textContent = '🧪';
+    document.getElementById('modal-body').innerHTML = htmlContent;
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+}
+
+function analyzeABG() {
+  const ph   = parseFloat(document.getElementById('abg-ph').value);
+  const co2  = parseFloat(document.getElementById('abg-co2').value);
+  const hco3 = parseFloat(document.getElementById('abg-hco3').value);
+  const result = document.getElementById('abg-result');
+
+  if (isNaN(ph) || isNaN(co2) || isNaN(hco3)) {
+    result.style.display = 'block';
+    result.innerHTML = '<div style="color:#f87171;font-family:JetBrains Mono,monospace;font-size:13px">⚠ Please enter all three values.</div>';
+    return;
+  }
+
+  // Step 1: Determine pH status
+  const phLow  = ph < 7.35;
+  const phHigh = ph > 7.45;
+  const phNorm = !phLow && !phHigh;
+
+  // Step 2: Determine CO2 status
+  const co2High = co2 > 45;
+  const co2Low  = co2 < 35;
+  const co2Norm = !co2High && !co2Low;
+
+  // Step 3: Determine HCO3 status
+  const hco3Low  = hco3 < 22;
+  const hco3High = hco3 > 26;
+  const hco3Norm = !hco3Low && !hco3High;
+
+  let disorder = '';
+  let type = '';
+  let compensation = '';
+  let color = '#38bdf8';
+
+  if (phNorm && co2Norm && hco3Norm) {
+    disorder = 'Normal ABG';
+    type = 'All values within normal range.';
+    color = '#34d399';
+  } else if (phNorm) {
+    // Compensated or mixed
+    if (co2High && hco3High) {
+      disorder = 'Compensated Respiratory Acidosis';
+      type = 'Primary: ↑ PaCO₂ (Respiratory Acidosis) — Compensation: ↑ HCO₃ (Metabolic)';
+      color = '#fb923c';
+    } else if (co2Low && hco3Low) {
+      disorder = 'Compensated Respiratory Alkalosis';
+      type = 'Primary: ↓ PaCO₂ (Respiratory Alkalosis) — Compensation: ↓ HCO₃ (Metabolic)';
+      color = '#a78bfa';
+    } else if (hco3Low && co2Low) {
+      disorder = 'Compensated Metabolic Acidosis';
+      type = 'Primary: ↓ HCO₃ (Metabolic Acidosis) — Compensation: ↓ PaCO₂ (Respiratory)';
+      color = '#fb923c';
+    } else if (hco3High && co2High) {
+      disorder = 'Compensated Metabolic Alkalosis';
+      type = 'Primary: ↑ HCO₃ (Metabolic Alkalosis) — Compensation: ↑ PaCO₂ (Respiratory)';
+      color = '#a78bfa';
+    } else {
+      disorder = 'Mixed Disorder';
+      type = 'pH normal but CO₂ and HCO₃ abnormal — consider mixed disorder.';
+      color = '#f472b6';
+    }
+  } else if (phLow) {
+    if (co2High && !hco3Low) {
+      disorder = 'Respiratory Acidosis';
+      type = 'Primary: ↑ PaCO₂ — pH acidotic. Hypoventilation.';
+      compensation = hco3High ? 'Partial metabolic compensation present (↑ HCO₃).' : 'No metabolic compensation yet.';
+      color = '#f87171';
+    } else if (hco3Low && !co2High) {
+      disorder = 'Metabolic Acidosis';
+      type = 'Primary: ↓ HCO₃ — pH acidotic.';
+      compensation = co2Low ? 'Partial respiratory compensation present (↓ PaCO₂ — Kussmaul breathing).' : 'No respiratory compensation yet.';
+      color = '#f87171';
+    } else if (co2High && hco3Low) {
+      disorder = 'Mixed Respiratory & Metabolic Acidosis';
+      type = 'Both ↑ PaCO₂ and ↓ HCO₃ driving acidosis. Severe disorder.';
+      color = '#f87171';
+    } else {
+      disorder = 'Acidosis';
+      type = 'pH low. Check CO₂ and HCO₃ values carefully.';
+      color = '#f87171';
+    }
+  } else if (phHigh) {
+    if (co2Low && !hco3High) {
+      disorder = 'Respiratory Alkalosis';
+      type = 'Primary: ↓ PaCO₂ — pH alkalotic. Hyperventilation.';
+      compensation = hco3Low ? 'Partial metabolic compensation present (↓ HCO₃).' : 'No metabolic compensation yet.';
+      color = '#34d399';
+    } else if (hco3High && !co2Low) {
+      disorder = 'Metabolic Alkalosis';
+      type = 'Primary: ↑ HCO₃ — pH alkalotic.';
+      compensation = co2High ? 'Partial respiratory compensation present (↑ PaCO₂).' : 'No respiratory compensation yet.';
+      color = '#34d399';
+    } else if (co2Low && hco3High) {
+      disorder = 'Mixed Respiratory & Metabolic Alkalosis';
+      type = 'Both ↓ PaCO₂ and ↑ HCO₃ driving alkalosis. Severe disorder.';
+      color = '#34d399';
+    } else {
+      disorder = 'Alkalosis';
+      type = 'pH high. Check CO₂ and HCO₃ values carefully.';
+      color = '#34d399';
+    }
+  }
+
+  result.style.display = 'block';
+  result.innerHTML = `
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#4a6a8a;letter-spacing:.1em;margin-bottom:8px">INTERPRETATION</div>
+    <div style="font-size:18px;font-weight:700;color:${color};margin-bottom:8px">${disorder}</div>
+    <div style="font-size:13px;color:#e1eaf5;margin-bottom:${compensation ? '8px' : '0'}">${type}</div>
+    ${compensation ? '<div style="font-size:13px;color:#38bdf8">' + compensation + '</div>' : ''}
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #192d45;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+      <div style="text-align:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a6a8a;margin-bottom:4px">pH</div>
+        <div style="font-size:16px;font-weight:700;color:${phLow ? '#f87171' : phHigh ? '#34d399' : '#e1eaf5'}">${ph}</div>
+        <div style="font-size:10px;color:#4a6a8a">${phLow ? '↓ ACIDOTIC' : phHigh ? '↑ ALKALOTIC' : '✓ NORMAL'}</div>
+      </div>
+      <div style="text-align:center;border-left:1px solid #192d45;border-right:1px solid #192d45">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a6a8a;margin-bottom:4px">PaCO₂</div>
+        <div style="font-size:16px;font-weight:700;color:${co2High ? '#f87171' : co2Low ? '#34d399' : '#e1eaf5'}">${co2}</div>
+        <div style="font-size:10px;color:#4a6a8a">${co2High ? '↑ HIGH' : co2Low ? '↓ LOW' : '✓ NORMAL'}</div>
+      </div>
+      <div style="text-align:center">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#4a6a8a;margin-bottom:4px">HCO₃</div>
+        <div style="font-size:16px;font-weight:700;color:${hco3Low ? '#f87171' : hco3High ? '#34d399' : '#e1eaf5'}">${hco3}</div>
+        <div style="font-size:10px;color:#4a6a8a">${hco3Low ? '↓ LOW' : hco3High ? '↑ HIGH' : '✓ NORMAL'}</div>
+      </div>
+    </div>`;
+}
+
 async function initAuth() {
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user) {
@@ -14027,6 +14305,18 @@ async function openTopic(name, category, icon) {
     document.getElementById('desktop-content-cat').textContent = category;
     document.getElementById('desktop-content-body').innerHTML = htmlContent;
     updateUserBar();
+    // Add/update email button in desktop header
+    let emailBtn = document.getElementById('desktop-email-btn');
+    if (!emailBtn) {
+      emailBtn = document.createElement('button');
+      emailBtn.id = 'desktop-email-btn';
+      emailBtn.title = 'Email this card';
+      emailBtn.innerHTML = '🖨';
+      emailBtn.style.cssText = 'background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);border-radius:8px;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:#38bdf8;position:absolute;top:16px;right:16px;z-index:10';
+      emailBtn.onclick = emailCard;
+      const contentArea = document.getElementById('desktop-content-area');
+      if (contentArea) { contentArea.style.position = 'relative'; contentArea.appendChild(emailBtn); }
+    }
 
     // Show topic view, hide others
     document.getElementById('content-welcome').style.display = 'none';
