@@ -3,6 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#070d1a">
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="ICU Core">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>Laro Labs — Building What's Next</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=DM+Mono:wght@400;500&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -482,10 +488,13 @@ footer {
   border-radius: 20px;
   width: 100%;
   max-width: 440px;
-  padding: 36px 32px 32px;
+  padding: 28px 16px 24px;
   box-shadow: 0 4px 60px rgba(0,0,0,.6), 0 0 80px rgba(59,158,255,.06);
   position: relative;
   animation: modalIn .25s cubic-bezier(.4,0,.2,1);
+}
+@media (min-width: 480px) {
+  .modal-card { padding: 36px 32px 32px; }
 }
 @keyframes modalIn {
   from { opacity: 0; transform: translateY(16px) scale(.97); }
@@ -1202,5 +1211,6 @@ async function doSignUp() {
   }
 }
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"d97a0c383b874713b827d237fcff33e0","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

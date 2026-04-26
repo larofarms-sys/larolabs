@@ -7,11 +7,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="ICU Edu">
 <meta name="theme-color" content="#070d1a">
-<link rel="manifest" href="/manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="ICU Core">
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
 <title>ICU Education Program</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -250,8 +245,6 @@ body {
   display: flex;
   align-items: center;
   padding: 0 20px;
-  padding-top: env(safe-area-inset-top, 0px);
-  height: calc(56px + env(safe-area-inset-top, 0px));
   gap: 12px;
   flex-shrink: 0;
   position: relative;
@@ -276,7 +269,6 @@ body {
 .role-badge-educator { background: rgba(59,158,255,.12); color: var(--accent); }
 .role-badge-student  { background: rgba(34,211,165,.12); color: var(--accent2); }
 .role-badge-manager  { background: rgba(251,146,60,.12); color: var(--warn); }
-.role-badge-admin    { background: rgba(59,158,255,.12); color: var(--accent); }
 .topbar-name { font-size: 13px; color: var(--text-mid); }
 .topbar-signout {
   background: none; border: none; color: var(--text-dim);
@@ -382,115 +374,6 @@ body {
 .stat-card .sc-label { font-family: var(--mono); font-size: 10px; color: var(--text-dim); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
 .stat-card .sc-val { font-family: var(--serif); font-size: 32px; color: var(--text); line-height: 1; }
 .stat-card .sc-sub { font-size: 12px; color: var(--text-mid); margin-top: 4px; }
-
-/* ─── DASHBOARD EXTRAS ─── */
-.dash-section-title {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-  margin-bottom: 12px;
-}
-.student-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.student-avatar {
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #1a5fba);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--serif);
-  font-size: 20px;
-  color: #fff;
-  flex-shrink: 0;
-}
-.student-info { flex: 1; }
-.student-name { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
-.student-meta { font-size: 12px; color: var(--text-mid); margin-bottom: 10px; }
-.student-progress-bar { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
-.student-progress-fill { height: 100%; background: var(--accent2); border-radius: 3px; transition: width .4s; }
-.student-pct { font-family: var(--mono); font-size: 11px; color: var(--accent2); margin-top: 4px; }
-.code-card {
-  background: var(--surface);
-  border: 1px solid rgba(59,158,255,.25);
-  border-radius: var(--radius);
-  padding: 20px 24px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.code-value {
-  font-family: var(--mono);
-  font-size: 26px;
-  letter-spacing: .18em;
-  color: var(--accent);
-  flex: 1;
-}
-.code-meta { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
-.btn-copy {
-  background: rgba(59,158,255,.1);
-  border: 1px solid rgba(59,158,255,.25);
-  border-radius: 8px;
-  color: var(--accent);
-  font-size: 12px;
-  padding: 8px 16px;
-  cursor: pointer;
-  font-family: var(--mono);
-  transition: all .2s;
-  white-space: nowrap;
-}
-.btn-copy:hover { background: rgba(59,158,255,.2); }
-.educator-row {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 18px 20px;
-  margin-bottom: 12px;
-}
-.educator-row-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.educator-avatar {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, rgba(251,146,60,.3), rgba(251,146,60,.1));
-  border: 1px solid rgba(251,146,60,.3);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  color: var(--warn);
-  font-family: var(--serif);
-  flex-shrink: 0;
-}
-.educator-name { font-size: 14px; font-weight: 500; color: var(--text); }
-.educator-badge {
-  margin-left: auto;
-  font-family: var(--mono);
-  font-size: 9px;
-  padding: 3px 8px;
-  border-radius: 10px;
-  background: rgba(251,146,60,.1);
-  color: var(--warn);
-  border: 1px solid rgba(251,146,60,.2);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-.no-student-msg {
-  font-size: 12px;
-  color: var(--text-dim);
-  font-style: italic;
-  padding: 4px 0;
-}
 
 /* ─── MESSAGING ─── */
 .msg-layout {
@@ -721,7 +604,6 @@ body {
   .msg-layout { height: calc(100vh - 56px - 60px - 48px); min-height: 300px; }
   .topbar-name { display: none; }
   .card-row { grid-template-columns: 1fr 1fr; }
-  @media (max-width: 480px) { .card-row { grid-template-columns: 1fr; } }
 }
 
 /* ─── SPINNER ─── */
@@ -749,108 +631,12 @@ body {
   transition: opacity .3s; pointer-events: none; white-space: nowrap;
 }
 .toast.show { opacity: 1; }
-
-/* ─── QCC NOTIFICATION BADGE ─── */
-.qcc-badge {
-  display: none;
-  align-items: center;
-  gap: 6px;
-  background: rgba(244,63,94,.15);
-  border: 1px solid rgba(244,63,94,.35);
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: #f43f5e;
-  cursor: pointer;
-  animation: qcc-pulse 1.4s ease-in-out infinite;
-  white-space: nowrap;
-}
-.qcc-badge.show { display: flex; }
-.qcc-badge-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: #f43f5e;
-  animation: qcc-dot 1.4s ease-in-out infinite;
-}
-@keyframes qcc-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(244,63,94,.3); }
-  50% { box-shadow: 0 0 0 6px rgba(244,63,94,0); }
-}
-@keyframes qcc-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .3; }
-}
-.msg-thread-item.qcc-thread {
-  border-left-color: rgba(244,63,94,.5);
-  background: rgba(244,63,94,.04);
-}
-.msg-thread-item.qcc-thread .mt-name { color: #f43f5e; }
-.msg-thread-item.qcc-thread.active { background: rgba(244,63,94,.1); border-left-color: #f43f5e; }
-.qcc-msg-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.qcc-msg-topic {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--accent2);
-}
-.qcc-msg-body { font-size: 13px; color: var(--text); line-height: 1.5; }
-.qcc-msg-time { font-size: 10px; color: var(--text-dim); }
-.qcc-reply-row { display: flex; gap: 8px; margin-top: 6px; }
-.qcc-reply-input {
-  flex: 1;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 8px 12px;
-  color: var(--text);
-  font-family: var(--sans);
-  font-size: 12px;
-  outline: none;
-  resize: none;
-}
-.qcc-reply-input:focus { border-color: var(--accent2); }
-.qcc-reply-btn {
-  background: rgba(34,211,165,.15);
-  border: 1px solid rgba(34,211,165,.3);
-  border-radius: 8px;
-  color: var(--accent2);
-  font-size: 12px;
-  padding: 8px 14px;
-  cursor: pointer;
-  white-space: nowrap;
-}
-.qcc-reply-btn:hover { background: rgba(34,211,165,.25); }
-.qcc-replied-tag {
-  font-size: 10px;
-  color: var(--accent2);
-  font-family: var(--mono);
-  margin-top: 4px;
-}
-
 </style>
 </head>
 <body>
 
-<!-- ═══════════════ LOGIN SCREEN ═══════════════ -->
-<!-- LOADING SCREEN -->
-<div id="screen-loading" style="position:fixed;inset:0;background:#070d1a;display:flex;align-items:center;justify-content:center;z-index:999">
-  <div style="text-align:center">
-    <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#e8eef7;margin-bottom:16px">ICU <span style="color:#3b9eff">Core</span></div>
-    <div style="width:32px;height:32px;border:2px solid rgba(59,158,255,.2);border-top-color:#3b9eff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto"></div>
-  </div>
-</div>
-
-<div id="screen-login" class="screen">
+<!-- ═══════════════ LOGIN SCREEN v7 ═══════════════ -->
+<div id="screen-login" class="screen active">
   <div class="login-card">
     <div class="login-logo">
       <div class="login-logo-icon">🏥</div>
@@ -927,7 +713,7 @@ body {
   <!-- Top Bar -->
   <div class="topbar">
     <button class="hamburger" onclick="toggleMobileNav()">☰</button>
-    <div class="topbar-logo">ICU <span>Core</span></div>
+    <div class="topbar-logo">ICU <span>Edu</span></div>
     <span class="topbar-name" id="topbar-name"></span>
     <span class="topbar-role" id="topbar-role"></span>
     <button class="topbar-signout" onclick="handleSignOut()" title="Sign out">⏻</button>
@@ -962,9 +748,9 @@ body {
       </div>
       <!-- Educator only: reference -->
       <div class="sidebar-section" id="sidebar-ref-section" style="display:none">
-        <div class="sidebar-label">Training</div>
-        <div class="nav-item" onclick="window.location.href='/icu/toc/'">
-          <span class="ni-icon">📋</span> ICU Core
+        <div class="sidebar-label">Resources</div>
+        <div class="nav-item" data-view="reference" onclick="switchView('reference')">
+          <span class="ni-icon">📋</span> ICU Reference
         </div>
       </div>
     </div>
@@ -975,38 +761,9 @@ body {
       <!-- DASHBOARD -->
       <div class="panel-view active" id="view-dashboard">
         <div class="panel-title" id="dash-greeting">Welcome back</div>
-        <div class="panel-sub" id="dash-sub">ICU Core</div>
-
-        <!-- STUDENT DASHBOARD -->
-        <div id="dash-student" style="display:none">
-          <div class="card-row" id="dash-student-stats"></div>
-          <div class="dash-section-title">My Progress</div>
-          <div id="dash-student-progress">
-            <div class="empty-state"><div class="es-icon">📊</div><p>Loading progress...</p></div>
-          </div>
-        </div>
-
-        <!-- EDUCATOR DASHBOARD -->
-        <div id="dash-educator" style="display:none">
-          <div class="card-row" id="dash-educator-stats"></div>
-          <div class="dash-section-title">My Student</div>
-          <div id="dash-educator-student">
-            <div class="empty-state"><div class="es-icon">🎓</div><p>No student connected yet. Share your access code below.</p></div>
-          </div>
-          <div class="dash-section-title" style="margin-top:24px">Student Access Code</div>
-          <div id="dash-educator-code">
-            <div class="empty-state"><div class="es-icon">🔑</div><p>Loading...</p></div>
-          </div>
-        </div>
-
-        <!-- MANAGER DASHBOARD -->
-        <div id="dash-manager" style="display:none">
-          <div class="card-row" id="dash-manager-stats"></div>
-          <div class="dash-section-title">Educators &amp; Their Students</div>
-          <div id="dash-manager-list">
-            <div class="empty-state"><div class="es-icon">👥</div><p>No educators yet</p></div>
-          </div>
-        </div>
+        <div class="panel-sub" id="dash-sub">ICU Education Program</div>
+        <div class="card-row" id="dash-stats"></div>
+        <div id="dash-recent"></div>
       </div>
 
       <!-- ANNOUNCEMENTS -->
@@ -1068,7 +825,7 @@ body {
           <div style="font-size:40px;margin-bottom:16px">📋</div>
           <div style="font-family:var(--serif);font-size:20px;margin-bottom:8px">ICU Quick Reference</div>
           <div style="font-size:13px;color:var(--text-mid);margin-bottom:20px">Medications, pathophysiology, devices, protocols and more</div>
-          <button class="btn btn-primary" style="max-width:200px;margin:0 auto" onclick="window.location.href='/icu/toc/'">Open Training →</button>
+          <button class="btn btn-primary" style="max-width:200px;margin:0 auto" onclick="window.open('icu-reference.html','_blank')">Open Reference →</button>
         </div>
       </div>
 
@@ -1103,51 +860,42 @@ const sb = window.sb;
 // STATE
 // ═══════════════════════════════════════════
 let currentUser = null;
-
-// Normalize admin → educator so Angela can use the ICU app as an educator
-function getRole(profile) {
-  if (!profile) return null;
-  return profile.role === 'admin' ? 'educator' : profile.role;
-}
 let currentProfile = null;
 let allProfiles = [];
 let activeTab = 'educator';
 let activeThread = null;
 let messageSubscription = null;
-let appLoaded = false;
 
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
 sb.auth.onAuthStateChange(async (event, session) => {
-  document.getElementById('screen-loading').style.display = 'none';
   setDebug('Auth event: ' + event + (session?.user ? ' | user: ' + session.user.email : ' | no session'));
   if (session?.user) {
-    // Prevent re-loading if app already showing
-    if (appLoaded && event !== 'SIGNED_OUT') return;
     currentUser = session.user;
     try {
       setDebug('Loading profile for: ' + session.user.id);
-      await loadProfile(session.access_token);
+      await loadProfile();
       if (!currentProfile) {
-        window.location.href = '/';
+        showLogin();
+        setMsg('Profile not found. Please contact your administrator.');
+        document.getElementById('signin-btn-text').textContent = 'Sign In';
+        setDebug('Profile was null after load');
         return;
       }
       setDebug('Profile loaded: ' + currentProfile.full_name + ' | role: ' + currentProfile.role);
-      appLoaded = true;
       showApp();
-    await initPushNotifications();
-    showIOSInstallPrompt();
     } catch(e) {
       console.error('Profile load error:', e);
+      showLogin();
+      setMsg('Error: ' + e.message);
+      document.getElementById('signin-btn-text').textContent = 'Sign In';
       setDebug('ERROR: ' + e.message);
-      window.location.href = '/';
     }
   } else {
     currentUser = null;
     currentProfile = null;
-    appLoaded = false;
-    window.location.href = '/';
+    showLogin();
   }
 });
 
@@ -1259,21 +1007,21 @@ async function handleSignUp() {
 async function handleSignOut() {
   if (messageSubscription) { sb.removeChannel(messageSubscription); messageSubscription = null; }
   await sb.auth.signOut();
-  window.location.href = '/#login';
 }
 
 // ═══════════════════════════════════════════
 // PROFILE
 // ═══════════════════════════════════════════
-async function loadProfile(accessToken) {
+async function loadProfile() {
   setDebug('Querying profiles table...');
 
+  // Use fetch directly to bypass any JS client issues
   const res = await fetch(
     `${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentUser.id}&select=*`,
     {
       headers: {
         'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + accessToken,
+        'Authorization': 'Bearer ' + (await sb.auth.getSession()).data.session.access_token,
         'Content-Type': 'application/json'
       }
     }
@@ -1302,7 +1050,7 @@ async function loadProfile(accessToken) {
     {
       headers: {
         'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + accessToken,
+        'Authorization': 'Bearer ' + (await sb.auth.getSession()).data.session.access_token,
         'Content-Type': 'application/json'
       }
     }
@@ -1315,7 +1063,8 @@ async function loadProfile(accessToken) {
 // SHOW APP
 // ═══════════════════════════════════════════
 function showLogin() {
-  window.location.href = '/';
+  document.getElementById('screen-login').classList.add('active');
+  document.getElementById('screen-app').classList.remove('active');
 }
 
 function showApp() {
@@ -1323,6 +1072,10 @@ function showApp() {
   document.getElementById('screen-app').classList.add('active');
   setupAppForRole();
   loadDashboard();
+  if (currentProfile.role === 'educator' || currentProfile.role === 'admin') {
+    updateQCCBadge();
+    updateSelectedStudentCard();
+  }
   loadAnnouncements();
   setupMessageThreads();
   loadPeople();
@@ -1330,26 +1083,29 @@ function showApp() {
 }
 
 function setupAppForRole() {
-  const role = getRole(currentProfile);
+  const role = currentProfile?.role || 'student';
+  const displayRole = role === 'admin' ? 'educator' : role;
   const name = currentProfile?.full_name || '';
   document.getElementById('topbar-name').textContent = name;
-  document.getElementById('topbar-role').textContent = role;
-  document.getElementById('topbar-role').className = 'topbar-role role-badge-' + role;
+  document.getElementById('topbar-role').textContent = displayRole.toUpperCase();
+  document.getElementById('topbar-role').className = 'topbar-role role-badge-' + displayRole;
 
   // Educator-only: reference link in sidebar
-  if (role === 'educator' || role === 'manager') {
-    document.getElementById('sidebar-ref-section').style.display = 'block';
+  if (role === 'educator' || role === 'manager' || role === 'admin') {
+    const refSection = document.getElementById('sidebar-ref-section');
+    if (refSection) refSection.style.display = 'block';
   }
   // Manager: show announcement form
   if (role === 'manager') {
-    document.getElementById('ann-post-form').style.display = 'block';
+    const annForm = document.getElementById('ann-post-form');
+    if (annForm) annForm.style.display = 'block';
   }
   // People label
   if (role === 'student') {
     document.getElementById('sidebar-people-label').textContent = 'My Educator';
     document.getElementById('people-title').textContent = 'My Educator';
     document.getElementById('people-sub').textContent = 'Your assigned educator';
-  } else if (role === 'educator') {
+  } else if (role === 'educator' || role === 'admin') {
     document.getElementById('sidebar-people-label').textContent = 'My Students';
     document.getElementById('people-title').textContent = 'My Students';
     document.getElementById('people-sub').textContent = 'Students assigned to you';
@@ -1380,281 +1136,44 @@ function toggleMobileNav() {
 // ═══════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════
-async function loadDashboard() {
-  const role = getRole(currentProfile);
+function loadDashboard() {
+  const role = currentProfile?.role;
   const name = currentProfile?.full_name?.split(' ')[0] || 'there';
   document.getElementById('dash-greeting').textContent = 'Welcome back, ' + name;
-  document.getElementById('dash-sub').textContent =
-    role === 'manager'  ? 'Manager Dashboard — ICU Core' :
-    role === 'educator' ? 'Educator Dashboard — ICU Core' :
-    'Student Dashboard — ICU Core';
+  document.getElementById('dash-sub').textContent = role === 'manager' ? 'Department Manager View' :
+    (role === 'educator' || role === 'admin') ? 'Educator Dashboard' : 'Student Dashboard';
 
-  document.getElementById('dash-student').style.display  = role === 'student'  ? 'block' : 'none';
-  document.getElementById('dash-educator').style.display = role === 'educator' ? 'block' : 'none';
-  document.getElementById('dash-manager').style.display  = role === 'manager'  ? 'block' : 'none';
-
-  if (role === 'student')  { await loadStudentDash(); await checkStudentQCCBadge(); }
-  if (role === 'educator') { await loadEducatorDash(); await checkQCCBadge(); }
-  if (role === 'manager')  await loadManagerDash();
-}
-
-async function loadStudentDash() {
-  const educator = allProfiles.find(p => p.id === currentProfile?.educator_id);
-  document.getElementById('dash-student-stats').innerHTML = `
-    <div class="stat-card">
-      <div class="sc-label">My Educator</div>
-      <div class="sc-val" style="font-size:20px;margin-top:4px">${esc(educator?.full_name || '—')}</div>
-      <div class="sc-sub">${educator ? 'Your assigned educator' : 'Not yet assigned'}</div>
-    </div>
-    <div class="stat-card">
-      <div class="sc-label">Status</div>
-      <div class="sc-val" style="font-size:20px;margin-top:4px;color:var(--accent2)">Active</div>
-      <div class="sc-sub">ICU Core Program</div>
-    </div>
-    <div class="stat-card" style="border-color:rgba(59,158,255,.3);cursor:pointer" onclick="window.location.href='/icu/toc/'">
-      <div class="sc-label">Training</div>
-      <div class="sc-val" style="font-size:20px;margin-top:4px;color:var(--accent)">Open →</div>
-      <div class="sc-sub">ICU Training Manual</div>
-    </div>
-  `;
-  const studentBadgeContainer = document.getElementById('dash-student-stats');
-  if (studentBadgeContainer) {
-    const existingBadge = document.getElementById('student-qcc-notify-badge');
-    if (!existingBadge) {
-      const badge = document.createElement('div');
-      badge.id = 'student-qcc-notify-badge';
-      badge.className = 'qcc-badge';
-      badge.style.cssText = 'background:rgba(34,211,165,.12);border-color:rgba(34,211,165,.35);color:var(--accent2);margin-top:0;width:fit-content';
-      badge.onclick = goToStudentQCCReply;
-      badge.innerHTML = '<div class="qcc-badge-dot" style="background:var(--accent2)"></div> New Reply';
-      studentBadgeContainer.appendChild(badge);
-    }
-  }
-  try {
-    const session = { data: { session: { access_token: JSON.parse(localStorage.getItem('sb-uadyjsagkbikprlplkbn-auth-token'))?.access_token } } };
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/topic_progress?student_id=eq.${currentProfile.id}&select=topic_name`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + session.data.session.access_token, 'Content-Type': 'application/json' } }
-    );
-    const rows = res.ok ? await res.json() : [];
-    const completed = rows.length, total = 110;
-    const pct = Math.round((completed / total) * 100);
-    document.getElementById('dash-student-progress').innerHTML = `
-      <div class="student-card" style="flex-direction:column;align-items:flex-start;gap:12px">
-        <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
-          <div style="font-size:14px;color:var(--text-mid)">Topics Completed</div>
-          <div style="font-family:var(--mono);font-size:22px;color:var(--accent2)">${pct}%</div>
-        </div>
-        <div style="width:100%">
-          <div class="student-progress-bar" style="height:8px"><div class="student-progress-fill" style="width:${pct}%"></div></div>
-          <div class="student-pct" style="margin-top:6px">${completed} of ${total} topics complete</div>
-        </div>
-      </div>`;
-  } catch(e) {
-    document.getElementById('dash-student-progress').innerHTML = '<div class="empty-state"><div class="es-icon">📊</div><p>Could not load progress</p></div>';
-  }
-}
-
-async function loadEducatorDash() {
-  const myStudent = allProfiles.find(p => p.role === 'student' && p.educator_id === currentProfile.id);
-  document.getElementById('dash-educator-stats').innerHTML = `
-    <div class="stat-card">
-      <div class="sc-label">My Student</div>
-      <div class="sc-val" style="font-size:20px;margin-top:4px">${myStudent ? esc(myStudent.full_name) : '—'}</div>
-      <div class="sc-sub">${myStudent ? 'Currently enrolled' : 'No student connected'}</div>
-    </div>
-    <div class="stat-card" style="border-color:rgba(59,158,255,.3);cursor:pointer" onclick="window.location.href='/icu/toc/'">
-      <div class="sc-label">Training</div>
-      <div class="sc-val" style="font-size:20px;margin-top:4px;color:var(--accent)">Open →</div>
-      <div class="sc-sub">ICU Core Manual</div>
-    </div>
-    <div id="qcc-notify-badge" class="qcc-badge" onclick="event.stopPropagation();goToQCC()">
-      <div class="qcc-badge-dot"></div>
-      New Message
-    </div>
-  `;
-  const studentEl = document.getElementById('dash-educator-student');
-  if (!myStudent) {
-    studentEl.innerHTML = '<div class="empty-state"><div class="es-icon">🎓</div><p>No student connected yet. Share your access code below.</p></div>';
-  } else {
-    let completed = 0;
-    try {
-      const session = { data: { session: { access_token: JSON.parse(localStorage.getItem('sb-uadyjsagkbikprlplkbn-auth-token'))?.access_token } } };
-      const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/topic_progress?student_id=eq.${myStudent.id}&select=topic_name`,
-        { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + session.data.session.access_token, 'Content-Type': 'application/json' } }
-      );
-      if (res.ok) { const rows = await res.json(); completed = rows.length; }
-    } catch(e) {}
-    const pct = Math.round((completed / 110) * 100);
-    studentEl.innerHTML = `
-      <div class="student-card">
-        <div class="student-avatar">${(myStudent.full_name||'?')[0]}</div>
-        <div class="student-info">
-          <div class="student-name">${esc(myStudent.full_name)}</div>
-          <div class="student-meta">Student</div>
-          <div class="student-progress-bar"><div class="student-progress-fill" style="width:${pct}%"></div></div>
-          <div class="student-pct">${completed} / 110 topics — ${pct}% complete</div>
-        </div>
-        <button class="btn-copy" onclick="switchView('messages')" style="background:rgba(34,211,165,.1);border-color:rgba(34,211,165,.25);color:var(--accent2)">Message</button>
-      </div>`;
-  }
-  const codeEl = document.getElementById('dash-educator-code');
-  try {
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/access_codes?created_by=eq.${currentProfile.id}&role=eq.student&is_used=eq.false&select=code,created_at&order=created_at.desc&limit=1`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' } }
-    );
-    const rows = res.ok ? await res.json() : [];
-    if (rows && rows.length > 0) {
-      const code = rows[0].code;
-      codeEl.innerHTML = `
-        <div class="code-card">
-          <div><div class="code-value">${esc(code)}</div><div class="code-meta">Single-use · Share with your student to register</div></div>
-          <button class="btn-copy" onclick="navigator.clipboard.writeText('${esc(code)}').then(()=>showToast('Code copied!'))">Copy Code</button>
-        </div>`;
-    } else if (myStudent) {
-      codeEl.innerHTML = '<div class="empty-state"><div class="es-icon">✅</div><p>Your student has already used their code.</p></div>';
-    } else {
-      codeEl.innerHTML = `
-        <div class="code-card" style="border-color:var(--border);flex-direction:column;align-items:flex-start;gap:14px">
-          <div style="font-size:13px;color:var(--text-mid)">No active code. Generate one to invite your student.</div>
-          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;width:100%">
-            <div style="flex:1;min-width:180px">
-              <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px">Student Email (optional)</div>
-              <input type="email" id="student-email-input" placeholder="student@email.com"
-                style="width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:9px 12px;color:var(--text);font-family:var(--sans);font-size:13px;outline:none">
-            </div>
-            <button class="btn-copy" onclick="generateStudentCode()">Generate Code</button>
-          </div>
-        </div>
-      `;
-    }
-  } catch(e) {
-    codeEl.innerHTML = '<div class="empty-state"><div class="es-icon">🔑</div><p>Could not load code</p></div>';
-  }
-}
-
-async function generateStudentCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for (let i = 0; i < 8; i++) { if (i === 4) code += '-'; code += chars[Math.floor(Math.random() * chars.length)]; }
-  const studentEmail = document.getElementById('student-email-input')?.value.trim() || '';
-
-  try {
-    const session = { data: { session: { access_token: JSON.parse(localStorage.getItem('sb-uadyjsagkbikprlplkbn-auth-token'))?.access_token } } };
-    const token = session.data.session.access_token;
-
-    // Insert into access_codes table
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/access_codes`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({ code, role: 'student', created_by: currentProfile.id, is_used: false })
-    });
-
-    if (!res.ok) { const err = await res.text(); showToast('Error: ' + err); return; }
-
-    // Save to educator's profile invite_code
-    await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${currentProfile.id}`, {
-      method: 'PATCH',
-      headers: {
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({ invite_code: code })
-    });
-
-    // Send email if provided
-    if (studentEmail) {
-      await sendStudentInviteEmail(studentEmail, code);
-    }
-
-    showToast(studentEmail ? 'Code generated & email sent!' : 'Code generated!');
-    loadEducatorDash();
-  } catch(e) { showToast('Error: ' + e.message); }
-}
-
-async function sendStudentInviteEmail(email, code) {
-  const signupLink = 'https://larolabs.com/#signup-student';
-  const educatorName = currentProfile?.full_name || 'Your educator';
-  try {
-    await fetch('https://uadyjsagkbikprlplkbn.supabase.co/functions/v1/send-email', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec' },
-      body: JSON.stringify({
-        to: [email],
-        subject: "You've been invited to ICU Core",
-        html: `
-          <div style="font-family:sans-serif;max-width:560px;margin:0 auto;padding:32px;background:#f8faff">
-            <div style="background:#070d1a;border-radius:12px;padding:32px;color:#e8eef7">
-              <div style="font-size:22px;font-weight:700;margin-bottom:8px">ICU <span style="color:#3b9eff">Core</span></div>
-              <div style="font-size:13px;color:#7a9bbf;margin-bottom:24px;text-transform:uppercase;letter-spacing:0.1em">Western Arizona Regional</div>
-              <p style="font-size:15px;color:#c5d8ff;margin-bottom:16px"><strong style="color:#e8eef7">${esc(educatorName)}</strong> has invited you to join ICU Core as a <strong style="color:#e8eef7">Student</strong>.</p>
-              <p style="font-size:14px;color:#7a9bbf;margin-bottom:24px">Use the access code below to create your account:</p>
-              <div style="background:#0e1829;border:1px solid #3b9eff;border-radius:8px;padding:20px;text-align:center;margin-bottom:24px">
-                <div style="font-family:monospace;font-size:28px;letter-spacing:0.2em;color:#3b9eff">${code}</div>
-                <div style="font-size:12px;color:#7a9bbf;margin-top:8px">Single-use access code</div>
-              </div>
-              <a href="${signupLink}" style="display:block;background:#3b9eff;color:#fff;text-align:center;padding:14px;border-radius:8px;text-decoration:none;font-weight:600;font-size:15px">Create Your Account →</a>
-              <p style="font-size:12px;color:#3d5a7a;margin-top:24px;text-align:center">This code can only be used once. Contact your educator if you have questions.</p>
-            </div>
-          </div>
-        `
-      })
-    });
-  } catch(e) { console.error('Email send failed:', e); }
-}
-
-// Also notify educator when student signs up — called after successful signup
-// This runs on the landing page after account creation
-
-async function loadManagerDash() {
-  const educators = allProfiles.filter(p => p.role === 'educator' || p.role === 'admin');
-  const students  = allProfiles.filter(p => p.role === 'student');
-  document.getElementById('dash-manager-stats').innerHTML = `
-    <div class="stat-card"><div class="sc-label">Educators</div><div class="sc-val">${educators.length}</div><div class="sc-sub">Active in program</div></div>
-    <div class="stat-card"><div class="sc-label">Students</div><div class="sc-val" style="color:var(--accent2)">${students.length}</div><div class="sc-sub">Currently enrolled</div></div>
-    <div class="stat-card"><div class="sc-label">Connections</div><div class="sc-val" style="color:var(--accent)">${students.filter(s=>s.educator_id).length}</div><div class="sc-sub">Educator ↔ Student pairs</div></div>
-  `;
-  const listEl = document.getElementById('dash-manager-list');
-  if (!educators.length) { listEl.innerHTML = '<div class="empty-state"><div class="es-icon">👥</div><p>No educators yet</p></div>'; return; }
-  let allProgress = [];
-  try {
-    const session = { data: { session: { access_token: JSON.parse(localStorage.getItem('sb-uadyjsagkbikprlplkbn-auth-token'))?.access_token } } };
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/topic_progress?select=student_id,topic_name`,
-      { headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + session.data.session.access_token, 'Content-Type': 'application/json' } });
-    if (res.ok) allProgress = await res.json();
-  } catch(e) {}
-  listEl.innerHTML = educators.map(edu => {
-    const student = students.find(s => s.educator_id === edu.id);
-    let studentHTML = student ? (() => {
-      const completed = allProgress.filter(p => p.student_id === student.id).length;
-      const pct = Math.round((completed / 110) * 100);
-      return `<div class="student-card" style="padding:14px 16px">
-        <div class="student-avatar" style="width:34px;height:34px;font-size:15px">${(student.full_name||'?')[0]}</div>
-        <div class="student-info">
-          <div class="student-name" style="font-size:13px">${esc(student.full_name)}</div>
-          <div class="student-progress-bar" style="margin-top:6px"><div class="student-progress-fill" style="width:${pct}%"></div></div>
-          <div class="student-pct">${completed}/110 · ${pct}%</div>
-        </div>
-      </div>`;
-    })() : '<div class="no-student-msg">No student connected</div>';
-    return `<div class="educator-row">
-      <div class="educator-row-header">
-        <div class="educator-avatar">${(edu.full_name||'?')[0]}</div>
-        <div class="educator-name">${esc(edu.full_name)}</div>
-        <div class="educator-badge">Educator</div>
+  const statsEl = document.getElementById('dash-stats');
+  if (role === 'manager') {
+    const educators = allProfiles.filter(p => p.role === 'educator').length;
+    const students = allProfiles.filter(p => p.role === 'student').length;
+    statsEl.innerHTML = `
+      <div class="stat-card"><div class="sc-label">Educators</div><div class="sc-val">${educators}</div><div class="sc-sub">Active</div></div>
+      <div class="stat-card"><div class="sc-label">Students</div><div class="sc-val">${students}</div><div class="sc-sub">Enrolled</div></div>
+    `;
+  } else if (role === 'educator' || role === 'admin') {
+    const myStudents = allProfiles.filter(p => p.educator_id === currentProfile.id).length;
+    const code = currentProfile.invite_code || '—';
+    statsEl.innerHTML = `
+      <div class="stat-card"><div class="sc-label">My Students</div><div class="sc-val">${myStudents}</div><div class="sc-sub">Assigned to you</div></div>
+      <div class="stat-card" style="border-color:rgba(59,158,255,.3);">
+        <div class="sc-label">Your Invite Code</div>
+        <div class="sc-val" style="font-size:22px;font-family:var(--mono);letter-spacing:.12em;color:var(--accent);margin-top:4px">${code}</div>
+        <div class="sc-sub" style="margin-top:6px">Share with your student to register</div>
+        <button onclick="navigator.clipboard.writeText('${code}').then(()=>showToast('Code copied!'))" style="margin-top:8px;background:rgba(59,158,255,.1);border:1px solid rgba(59,158,255,.25);border-radius:6px;color:var(--accent);font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--mono);">Copy code</button>
       </div>
-      ${studentHTML}
-    </div>`;
-  }).join('');
+      <div class="stat-card" id="qcc-stat-card" onclick="openQCCMessages()" style="cursor:pointer;border-color:rgba(251,146,60,.15);display:none">
+        <div class="sc-label">Messages</div>
+        <div id="qcc-stat-val" class="sc-val" style="font-size:14px;margin-top:4px;color:#fb923c"></div>
+        <div class="sc-sub" style="margin-top:6px">Student questions from ICU Core</div>
+      </div>
+    `;
+  } else {
+    const educator = allProfiles.find(p => p.id === currentProfile?.educator_id);
+    statsEl.innerHTML = `
+      <div class="stat-card"><div class="sc-label">My Educator</div><div class="sc-val" style="font-size:18px;margin-top:4px">${educator?.full_name || '—'}</div><div class="sc-sub">Your assigned educator</div></div>
+    `;
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1695,17 +1214,17 @@ async function postAnnouncement() {
 // MESSAGING
 // ═══════════════════════════════════════════
 function getThreads() {
-  const role = getRole(currentProfile);
+  const role = currentProfile?.role;
   const threads = [];
 
   if (role === 'manager') {
     // Manager can message all educators
-    allProfiles.filter(p => p.role === 'educator' || p.role === 'admin').forEach(e => {
+    allProfiles.filter(p => p.role === 'educator').forEach(e => {
       threads.push({ id: e.id, name: e.full_name, type: 'dm', role: 'educator' });
     });
-  } else if (role === 'educator') {
-    // Educator: QCC student questions + lounge + student DM + manager
-    threads.push({ id: 'qcc-thread', name: '📋 Student Questions', type: 'qcc', role: null });
+  } else if (role === 'educator' || role === 'admin') {
+    // Educator: QCC from students, lounge, + their student(s), + manager
+    threads.push({ id: 'qcc-thread', name: '📋 Student Questions (ICU Core)', type: 'qcc', role: null });
     threads.push({ id: 'educator-lounge', name: 'Educator Lounge', type: 'group', role: null });
     allProfiles.filter(p => p.educator_id === currentProfile.id).forEach(s => {
       threads.push({ id: s.id, name: s.full_name, type: 'dm', role: 'student' });
@@ -1734,11 +1253,11 @@ function setupMessageThreads() {
 
   el.innerHTML = '<div class="msg-thread-label">Conversations</div>' +
     threads.map((t, i) => `
-      <div class="msg-thread-item ${t.type === 'qcc' ? 'qcc-thread' : ''}" data-idx="${i}" data-thread="${t.id}"
+      <div class="msg-thread-item" data-idx="${i}" data-thread="${t.id}"
            onclick="window._threadClick(${i})"
            style="cursor:pointer">
         <div class="mt-name">${esc(t.name)}</div>
-        <div class="mt-preview">${t.type === 'qcc' ? 'Student questions from ICU Core' : t.type === 'group' ? 'Group chat' : 'Direct message'}</div>
+        <div class="mt-preview">${t.type === 'group' ? 'Group chat' : 'Direct message'}</div>
       </div>
     `).join('');
 }
@@ -1768,6 +1287,7 @@ async function loadMessages(threadId, type) {
   if (threadId === 'educator-lounge') {
     query = query.eq('thread', 'educator-lounge');
   } else {
+    // DMs between current user and the other person
     query = query.or(
       `and(sender_id.eq.${currentProfile.id},recipient_id.eq.${threadId}),and(sender_id.eq.${threadId},recipient_id.eq.${currentProfile.id})`
     );
@@ -1777,84 +1297,80 @@ async function loadMessages(threadId, type) {
 }
 
 async function loadQCCThread() {
-  document.getElementById('msg-input-row').style.display = 'none';
-  const el = document.getElementById('msg-body');
-  el.innerHTML = '<div class="empty-state"><div class="es-icon">⏳</div><p>Loading questions...</p></div>';
-  await sb.from('topic_qcc').update({ read_by_educator: true }).eq('educator_id', currentProfile.id).eq('read_by_educator', false);
-  const badge = document.getElementById('qcc-notify-badge');
-  if (badge) badge.classList.remove('show');
-  const { data } = await sb.from('topic_qcc').select('*').eq('educator_id', currentProfile.id).order('submitted_at', { ascending: false });
-  if (!data || data.length === 0) {
-    el.innerHTML = '<div class="empty-state"><div class="es-icon">📋</div><p>No student questions yet</p></div>';
+  // Load all QCC messages for this educator's students
+  const studentIds = allProfiles.filter(p => p.educator_id === currentProfile.id).map(p => p.id);
+  if (studentIds.length === 0) {
+    document.getElementById('msg-body').innerHTML = '<div class="empty-state"><div class="es-icon">📋</div><p>No student questions yet</p></div>';
+    document.getElementById('msg-input-row').style.display = 'none';
     return;
   }
+
+  const { data } = await sb.from('topic_qcc')
+    .select('*, profiles!topic_qcc_student_id_fkey(full_name)')
+    .in('student_id', studentIds)
+    .order('created_at', { ascending: true });
+
+  if (!data || data.length === 0) {
+    document.getElementById('msg-body').innerHTML = '<div class="empty-state"><div class="es-icon">📋</div><p>No student questions yet</p></div>';
+    document.getElementById('msg-input-row').style.display = 'none';
+    return;
+  }
+
+  // Mark all as read
+  const unreadIds = data.filter(q => !q.read_by_educator).map(q => q.id);
+  if (unreadIds.length > 0) {
+    await sb.from('topic_qcc').update({ read_by_educator: true }).in('id', unreadIds);
+    updateQCCBadge();
+  }
+
+  const el = document.getElementById('msg-body');
   el.innerHTML = data.map(q => `
-    <div class="qcc-msg-card" id="qcc-card-${q.id}">
-      <div class="qcc-msg-topic">${esc(q.category)} · ${esc(q.topic_name)}</div>
-      <div class="qcc-msg-body">${esc(q.message)}</div>
-      <div class="qcc-msg-time">${fmtTime(q.submitted_at)}</div>
-      ${q.educator_reply ? `
-        <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">
-          <div class="qcc-replied-tag">✓ You replied:</div>
-          <div class="qcc-msg-body" style="color:var(--accent2);margin-top:4px">${esc(q.educator_reply)}</div>
-          <div class="qcc-msg-time">${fmtTime(q.replied_at)}</div>
-        </div>
-      ` : `
-        <div class="qcc-reply-row">
-          <textarea class="qcc-reply-input" id="qcc-reply-${q.id}" placeholder="Reply to student..." rows="2"></textarea>
-          <button class="qcc-reply-btn" onclick="sendQCCReply('${q.id}')">Reply</button>
-        </div>
-      `}
+    <div class="msg-bubble-wrap">
+      <div class="msg-avatar">${(q.profiles?.full_name || '?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()}</div>
+      <div>
+        <div style="font-size:10px;color:var(--text-dim);margin-bottom:4px;font-family:var(--mono)">${esc(q.profiles?.full_name || 'Student')} · ${esc(q.topic_name)} · ${fmtTime(q.created_at)}</div>
+        <div class="msg-bubble theirs">${esc(q.message)}</div>
+      </div>
     </div>
   `).join('');
+  el.scrollTop = el.scrollHeight;
+  document.getElementById('msg-input-row').style.display = 'none';
+  // Update badge
+  updateQCCBadge();
 }
 
-async function sendQCCReply(qccId) {
-  const input = document.getElementById('qcc-reply-' + qccId);
-  if (!input) return;
-  const reply = input.value.trim();
-  if (!reply) return;
-  const btn = input.nextElementSibling;
-  btn.textContent = 'Sending...';
-  btn.disabled = true;
-  const { error } = await sb.from('topic_qcc').update({ educator_reply: reply, replied_at: new Date().toISOString() }).eq('id', qccId);
-  if (error) { showToast('Failed to send reply'); btn.textContent = 'Reply'; btn.disabled = false; }
-  else { showToast('Reply sent!'); await loadQCCThread(); }
+async function updateQCCBadge() {
+  const studentIds = allProfiles.filter(p => p.educator_id === currentProfile.id).map(p => p.id);
+  if (studentIds.length === 0) return;
+  const { data } = await sb.from('topic_qcc').select('id').in('student_id', studentIds).eq('read_by_educator', false);
+  const count = data?.length || 0;
+  const card = document.getElementById('qcc-stat-card');
+  const val = document.getElementById('qcc-stat-val');
+  if (card && val) {
+    if (count > 0) {
+      card.style.display = 'block';
+      val.innerHTML = `<span style="animation:pulse 1.5s infinite;display:inline-block">🔔 ${count} NEW MESSAGE${count > 1 ? 'S' : ''}</span>`;
+    } else {
+      card.style.display = 'none';
+    }
+  }
 }
 
-async function checkQCCBadge() {
-  const role = getRole(currentProfile);
-  if (role !== 'educator') return;
-  const { data } = await sb.from('topic_qcc').select('id').eq('educator_id', currentProfile.id).eq('read_by_educator', false);
-  const badge = document.getElementById('qcc-notify-badge');
-  if (!badge) return;
-  if (data && data.length > 0) badge.classList.add('show');
-  else badge.classList.remove('show');
-}
-
-async function checkStudentQCCBadge() {
-  const role = getRole(currentProfile);
-  if (role !== 'student') return;
-  const { data } = await sb.from('topic_qcc').select('id, topic_name').eq('student_id', currentProfile.id).not('educator_reply', 'is', null).eq('read_by_student', false);
-  const badge = document.getElementById('student-qcc-notify-badge');
-  if (!badge) return;
-  if (data && data.length > 0) { window._pendingQCCReply = data[0]; badge.classList.add('show'); }
-  else { window._pendingQCCReply = null; badge.classList.remove('show'); }
-}
-
-async function goToStudentQCCReply() {
-  if (!window._pendingQCCReply) return;
-  const qcc = window._pendingQCCReply;
-  await sb.from('topic_qcc').update({ read_by_student: true }).eq('student_id', currentProfile.id).not('educator_reply', 'is', null).eq('read_by_student', false);
-  const badge = document.getElementById('student-qcc-notify-badge');
-  if (badge) badge.classList.remove('show');
-  window.location.href = '/icu/toc/?highlight=' + encodeURIComponent(qcc.topic_name);
-}
-
-function goToQCC() {
+function openQCCMessages() {
   switchView('messages');
-  setupMessageThreads();
-  setTimeout(() => openThread('qcc-thread', '📋 Student Questions', 'qcc'), 150);
+  // Open the QCC thread
+  const threads = window._threads || [];
+  const qccIdx = threads.findIndex(t => t.type === 'qcc');
+  if (qccIdx >= 0) {
+    window._threadClick(qccIdx);
+  } else {
+    setupMessageThreads();
+    setTimeout(() => {
+      const t2 = window._threads || [];
+      const idx2 = t2.findIndex(t => t.type === 'qcc');
+      if (idx2 >= 0) window._threadClick(idx2);
+    }, 300);
+  }
 }
 
 function renderMessages(msgs) {
@@ -1906,12 +1422,6 @@ function subscribeToMessages() {
       if (activeThread) await loadMessages(activeThread.id, activeThread.type);
       document.getElementById('badge-msg').classList.add('show');
     })
-    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'topic_qcc' }, async () => {
-      await checkQCCBadge();
-    })
-    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'topic_qcc' }, async () => {
-      await checkStudentQCCBadge();
-    })
     .subscribe();
 }
 
@@ -1919,12 +1429,12 @@ function subscribeToMessages() {
 // PEOPLE
 // ═══════════════════════════════════════════
 function loadPeople() {
-  const role = getRole(currentProfile);
+  const role = currentProfile?.role;
   let people = [];
   if (role === 'manager') {
     people = allProfiles.filter(p => p.id !== currentProfile.id);
-  } else if (role === 'educator') {
-    people = allProfiles.filter(p => p.educator_id === currentProfile.id);
+  } else if (role === 'educator' || role === 'admin') {
+    people = allProfiles.filter(p => p.educator_id === currentProfile.id && p.code_used);
   } else {
     const educator = allProfiles.find(p => p.id === currentProfile?.educator_id);
     if (educator) people = [educator];
@@ -1935,16 +1445,52 @@ function loadPeople() {
     el.innerHTML = '<div class="empty-state"><div class="es-icon">👥</div><p>No people yet</p></div>';
     return;
   }
-  el.innerHTML = people.map(p => `
-    <div class="person-card">
+  const selectedId = localStorage.getItem('selectedStudentId');
+  el.innerHTML = people.map(p => {
+    const isSelected = p.id === selectedId;
+    const isStudent = p.role === 'student';
+    const role = currentProfile?.role;
+    return `
+    <div class="person-card" style="${isSelected ? 'border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.05)' : ''}">
       <div class="person-avatar">${(p.full_name||'?')[0]}</div>
       <div class="person-info">
-        <div class="person-name">${esc(p.full_name)}</div>
+        <div class="person-name">${esc(p.full_name)}${isSelected ? ' <span style="font-size:10px;color:#34d399;font-family:var(--mono)">● SELECTED</span>' : ''}</div>
         <div class="person-role">${p.role}</div>
       </div>
-      <button class="person-msg-btn" onclick="goMessage('${p.id}','${esc(p.full_name)}')">Message</button>
+      <div style="display:flex;gap:6px;flex-shrink:0">
+        ${(isStudent && (role === 'educator' || role === 'admin')) ? `<button class="person-msg-btn" style="background:${isSelected ? 'rgba(52,211,153,.2);border-color:rgba(52,211,153,.4);color:#34d399' : ''}" onclick="selectStudent('${p.id}','${esc(p.full_name)}')">${isSelected ? '✓ Selected' : 'Select'}</button>` : ''}
+        <button class="person-msg-btn" onclick="goMessage('${p.id}','${esc(p.full_name)}')">Message</button>
+      </div>
     </div>
-  `).join('');
+  `}).join('');
+}
+
+function selectStudent(studentId, studentName) {
+  localStorage.setItem('selectedStudentId', studentId);
+  localStorage.setItem('selectedStudentName', studentName);
+  loadPeople();
+  updateSelectedStudentCard();
+  showToast(studentName + ' selected ✓');
+}
+
+function updateSelectedStudentCard() {
+  const name = localStorage.getItem('selectedStudentName');
+  const id = localStorage.getItem('selectedStudentId');
+  const el = document.getElementById('dash-recent');
+  if (!el) return;
+  const role = currentProfile?.role;
+  if ((role === 'educator' || role === 'admin') && name) {
+    el.innerHTML = `
+      <div style="margin-top:8px">
+        <div style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:.08em;margin-bottom:10px">MY STUDENT</div>
+        <div class="stat-card" style="border-color:rgba(52,211,153,.3)">
+          <div class="sc-label">Currently Viewing</div>
+          <div class="sc-val" style="font-size:18px;margin-top:4px">${esc(name)}</div>
+          <div class="sc-sub" style="margin-top:6px">ICU Core progress tracked for this student</div>
+          <button onclick="switchView('people')" style="margin-top:8px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);border-radius:6px;color:#34d399;font-size:11px;padding:4px 10px;cursor:pointer;font-family:var(--mono);">Change Student</button>
+        </div>
+      </div>`;
+  }
 }
 
 function goMessage(userId, name) {
@@ -1974,108 +1520,6 @@ function showToast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2500);
 }
-
-// ═══════════════════════════════════════════
-// PWA & PUSH NOTIFICATIONS
-// ═══════════════════════════════════════════
-const VAPID_PUBLIC_KEY = 'BA5mLWeMzqwTscQkDe0ldVV-KDlhReZeMJIJ6CKLmgMfZd7jgmrVUYZ8wk0ruO4wZoylPkXQHfN1HUD8eFwKOCk';
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
-  return outputArray;
-}
-
-async function initPushNotifications() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  try {
-    const reg = await navigator.serviceWorker.register('/sw.js');
-    await navigator.serviceWorker.ready;
-    let sub = await reg.pushManager.getSubscription();
-    if (!sub) {
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') return;
-      sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-      });
-    }
-    const subJson = sub.toJSON();
-    await sb.from('profiles').update({ push_subscription: subJson }).eq('id', currentProfile.id);
-    console.log('Push subscription saved');
-  } catch(e) {
-    console.warn('Push setup failed:', e);
-  }
-}
-
-function showIOSInstallPrompt() {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone;
-  if (isIOS && !isStandalone) {
-    if (document.getElementById('ios-install-prompt')) return;
-    const prompt = document.createElement('div');
-    prompt.id = 'ios-install-prompt';
-    prompt.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0e1829;border:1px solid #1c2e48;border-radius:14px;padding:14px 18px;font-size:13px;color:#e8eef7;z-index:9999;max-width:320px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.5)';
-    prompt.innerHTML = `<div style="font-weight:600;margin-bottom:6px">Install ICU Core</div><div style="color:#7a9bbf;font-size:12px">Tap <strong style="color:#e8eef7">Share</strong> then <strong style="color:#e8eef7">Add to Home Screen</strong> to install and enable notifications.</div><button onclick="this.parentElement.remove()" style="margin-top:10px;background:rgba(59,158,255,.15);border:1px solid rgba(59,158,255,.3);border-radius:8px;padding:6px 16px;color:#3b9eff;cursor:pointer;font-size:12px">Got it</button>`;
-    document.body.appendChild(prompt);
-  }
-}
-
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"d97a0c383b874713b827d237fcff33e0","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous">
-// ═══════════════════════════════════════════
-// PWA & PUSH NOTIFICATIONS
-// ═══════════════════════════════════════════
-const VAPID_PUBLIC_KEY = 'BA5mLWeMzqwTscQkDe0ldVV-KDlhReZeMJIJ6CKLmgMfZd7jgmrVUYZ8wk0ruO4wZoylPkXQHfN1HUD8eFwKOCk';
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
-  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
-  return outputArray;
-}
-
-async function initPushNotifications() {
-  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-  try {
-    const reg = await navigator.serviceWorker.register('/sw.js');
-    await navigator.serviceWorker.ready;
-    let sub = await reg.pushManager.getSubscription();
-    if (!sub) {
-      const permission = await Notification.requestPermission();
-      if (permission !== 'granted') return;
-      sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-      });
-    }
-    const subJson = sub.toJSON();
-    await sb.from('profiles').update({ push_subscription: subJson }).eq('id', currentProfile.id);
-    console.log('Push subscription saved');
-  } catch(e) {
-    console.warn('Push setup failed:', e);
-  }
-}
-
-function showIOSInstallPrompt() {
-  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone;
-  if (isIOS && !isStandalone) {
-    if (document.getElementById('ios-install-prompt')) return;
-    const prompt = document.createElement('div');
-    prompt.id = 'ios-install-prompt';
-    prompt.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#0e1829;border:1px solid #1c2e48;border-radius:14px;padding:14px 18px;font-size:13px;color:#e8eef7;z-index:9999;max-width:320px;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.5)';
-    prompt.innerHTML = `<div style="font-weight:600;margin-bottom:6px">Install ICU Core</div><div style="color:#7a9bbf;font-size:12px">Tap <strong style="color:#e8eef7">Share</strong> then <strong style="color:#e8eef7">Add to Home Screen</strong> to install and enable notifications.</div><button onclick="this.parentElement.remove()" style="margin-top:10px;background:rgba(59,158,255,.15);border:1px solid rgba(59,158,255,.3);border-radius:8px;padding:6px 16px;color:#3b9eff;cursor:pointer;font-size:12px">Got it</button>`;
-    document.body.appendChild(prompt);
-  }
-}
-
-</script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"d97a0c383b874713b827d237fcff33e0","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>

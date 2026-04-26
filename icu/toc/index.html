@@ -365,18 +365,36 @@ body::before {
     z-index: 10;
   }
   .desktop-back-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
+    background: rgba(59,158,255,.15);
+    border: 1px solid rgba(59,158,255,.4);
     border-radius: 8px;
-    padding: 6px 12px;
-    color: var(--text-mid);
+    padding: 8px 16px;
+    color: var(--accent);
     font-family: var(--mono);
-    font-size: 11px;
+    font-size: 12px;
+    font-weight: 600;
     cursor: pointer;
     transition: all .15s;
     white-space: nowrap;
+    letter-spacing: .04em;
   }
-  .desktop-back-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .desktop-back-btn:hover { background: rgba(59,158,255,.28); border-color: var(--accent); }
+  .dashboard-back-btn {
+    background: rgba(59,158,255,.15);
+    border: 1px solid rgba(59,158,255,.4);
+    border-radius: 8px;
+    padding: 7px 14px;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+    letter-spacing: .04em;
+    flex-shrink: 0;
+  }
+  .dashboard-back-btn:hover { background: rgba(59,158,255,.28); border-color: var(--accent); }
   .desktop-content-icon { font-size: 20px; }
   .desktop-content-title {
     font-family: var(--syne);
@@ -809,6 +827,7 @@ mark { background: rgba(56,189,248,.2); color: var(--accent); border-radius: 2px
 <!-- HEADER -->
 <div class="header">
   <div class="header-title">
+    <button class="dashboard-back-btn" onclick="window.location.href='/icu/'">&#8592; Dashboard</button>
     <div class="dot"></div>
     ICU Training
   </div>
@@ -14011,7 +14030,8 @@ function analyzeABG() {
 }
 
 async function initAuth() {
-  const { data: { session } } = await sb.auth.getSession();
+  const _token = JSON.parse(localStorage.getItem('sb-uadyjsagkbikprlplkbn-auth-token'));
+  const session = _token ? { user: { id: _token.user?.id || JSON.parse(atob(_token.access_token.split('.')[1])).sub, email: _token.user?.email } } : null;
   if (session?.user) {
     currentUser = session.user;
     await loadProfile();
@@ -14031,9 +14051,38 @@ async function initAuth() {
     }
     hideLoginOverlay();
     updateUserBar();
+    handleHighlightParam();
   } else {
     showLoginOverlay();
   }
+}
+
+function handleHighlightParam() {
+  const params = new URLSearchParams(window.location.search);
+  const topicName = params.get('highlight');
+  if (!topicName) return;
+  const items = document.querySelectorAll('.sub-item');
+  let found = null;
+  items.forEach(item => {
+    const name = item.querySelector('.sub-name')?.textContent?.trim();
+    if (name === topicName) found = item;
+  });
+  if (!found) return;
+  const cat = found.closest('.category');
+  if (cat && !cat.classList.contains('open')) cat.classList.add('open');
+  const catName = cat?.querySelector('.cat-name')?.textContent || '';
+  const catIcon = cat?.querySelector('.cat-icon')?.textContent || '📋';
+  const catMeta = cat?.querySelector('.cat-meta')?.textContent || '';
+  currentCategoryData = { catEl: cat, icon: catIcon, name: catName, meta: catMeta };
+  setTimeout(() => {
+    found.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    found.style.transition = 'background 0.3s';
+    found.style.background = 'rgba(34,211,165,0.2)';
+    found.style.borderRadius = '6px';
+    setTimeout(() => { found.style.background = ''; }, 2500);
+    found.click();
+  }, 600);
+  window.history.replaceState({}, '', window.location.pathname);
 }
 
 function showLoginOverlay() {
@@ -14667,5 +14716,6 @@ initAuth();
 buildDesktopSidebar();
 </script>
 
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"d97a0c383b874713b827d237fcff33e0","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
