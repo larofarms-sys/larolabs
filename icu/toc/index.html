@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!-- v29 email-btn-pos-fix -->
 <html lang="en">
 <head>
@@ -59,11 +59,34 @@ body::before {
   background: rgba(6,11,20,.92);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
-  padding: 0 24px;
-  height: 58px;
+  padding: 12px 24px 10px;
+  min-height: 58px;
   display: flex;
   align-items: center;
   gap: 16px;
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.search-results-message,
+.search-results-list {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  z-index: 101;
+}
+
+.search-results-message {
+  top: calc(100% + 8px);
+  margin-top: 0;
+  flex-basis: auto;
+  width: auto;
+}
+
+.search-results-list {
+  top: calc(100% + 34px);
+  margin-top: 0;
+  width: auto;
 }
 
 .header-title {
@@ -85,8 +108,9 @@ body::before {
 
 .search-box {
   position: relative;
-  flex: 1;
-  max-width: 320px;
+  flex: 1 1 360px;
+  min-width: 220px;
+  max-width: 560px;
 }
 .search-box input {
   width: 100%;
@@ -96,7 +120,7 @@ body::before {
   padding: 8px 14px 8px 36px;
   color: #0a0a0a;
   font-family: var(--inter);
-  font-size: 13px;
+  font-size: 14px;
   outline: none;
   transition: border-color .2s;
   caret-color: #0a0a0a;
@@ -130,6 +154,72 @@ body::before {
 }
 .search-clear:hover { background: #ccc; color: #000; }
 .search-clear.visible { display: flex; }
+
+.search-results-message {
+  margin-top: 8px;
+  font-family: var(--inter);
+  font-size: 12px;
+  color: #cbd5e1;
+  min-height: 18px;
+  flex-basis: 100%;
+  width: 100%;
+}
+.search-results-list {
+  margin-top: 8px;
+  width: 100%;
+  max-height: 280px;
+  overflow-y: auto;
+  background: rgba(15,23,42,.96);
+  border: 1px solid rgba(148,163,184,.2);
+  border-radius: 14px;
+  padding: 6px;
+  display: none;
+  flex-basis: 100%;
+}
+.search-results-list.visible {
+  display: block;
+}
+.search-result-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.search-result-item:hover,
+.search-result-item.active {
+  background: rgba(56,189,248,.12);
+}
+.search-result-item:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(56,189,248,.25);
+}
+.search-result-item .result-name {
+  font-size: 13px;
+  color: #f8fafc;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-result-item .result-cat {
+  font-size: 11px;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+.sub-item.search-match {
+  border-color: rgba(56,189,248,.35);
+  background: rgba(56,189,248,.08);
+}
+.sub-item.search-match .sub-name { color: var(--text); }
 
 .progress-pill {
   font-family: var(--mono);
@@ -326,17 +416,25 @@ body::before {
 
   /* Topic card in grid */
   .grid-topic-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px 16px;
-    border-radius: 10px;
+    display: grid;
+    grid-template-rows: auto auto;
+    gap: 12px;
+    padding: 16px 18px;
+    border-radius: 12px;
     cursor: pointer;
     border: 1px solid var(--border);
     background: var(--surface);
     transition: all .15s;
   }
   .grid-topic-card:hover { background: var(--surface2); border-color: var(--border2); transform: translateY(-1px); }
+  .grid-topic-card-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .grid-topic-card-footer {
+    margin-top: 0;
+  }
   .grid-topic-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .grid-topic-name { font-size: 13px; color: var(--text); flex: 1; line-height: 1.3; }
   .grid-topic-status {
@@ -414,9 +512,83 @@ body::before {
   /* Active topic highlight in grid */
   .grid-topic-card.active-topic { background: var(--surface2); border-color: var(--border2); }
   .grid-topic-card.active-topic .grid-topic-name { color: var(--accent); }
+  .grid-complete-btn {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: #34d399;
+    color: #060b14;
+    font-family: var(--syne);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    text-align: center;
+  }
+  .grid-complete-btn:hover:not(:disabled) {
+    background: #2fb26c;
+  }
+  .grid-complete-btn:disabled {
+    background: rgba(52,211,153,.14);
+    color: #94a3b8;
+    border-color: rgba(52,211,153,.3);
+    cursor: default;
+  }
+  .drug-complete-dot {
+    width: 12px;
+    height: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: #2e4a65;
+    border: 1px solid rgba(255,255,255,.08);
+    flex-shrink: 0;
+    margin-left: 10px;
+  }
+  .drug-complete-btn {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: #34d399;
+    color: #060b14;
+    font-family: var(--syne);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+    text-align: center;
+  }
+  .drug-complete-btn:hover:not(:disabled) {
+    background: #2fb26c;
+  }
+  .drug-complete-btn:disabled {
+    background: rgba(52,211,153,.14);
+    color: #94a3b8;
+    border-color: rgba(52,211,153,.3);
+    cursor: default;
+  }
+  .drug-card.drug-completed {
+    border-color: #34d399;
+  }
 
   /* Modal suppressed on desktop */
   .modal-overlay { display: none !important; }
+}
+
+.drug-complete-dot {
+  width: 12px;
+  height: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #2e4a65;
+  border: 1px solid rgba(255,255,255,.08);
+  flex-shrink: 0;
+  margin-left: 10px;
 }
 
 /* ── CATEGORY BLOCK ── */
@@ -836,6 +1008,8 @@ mark { background: rgba(56,189,248,.2); color: var(--accent); border-radius: 2px
     <input type="text" id="toc-search" placeholder="Search topics..." autocomplete="off" style="padding-right:28px">
     <button class="search-clear" id="search-clear-btn" onclick="clearSearch()" title="Clear search">✕</button>
   </div>
+  <div class="search-results-message" id="search-results-message" aria-live="polite"></div>
+  <div class="search-results-list" id="search-results-list" aria-label="Search results"></div>
   <div class="progress-pill" id="progress-pill">
     <div class="progress-dot"></div>
     <span id="progress-text">0 / 104 complete</span>
@@ -1226,6 +1400,10 @@ mark { background: rgba(56,189,248,.2); color: var(--accent); border-radius: 2px
             <button id="desktop-email-btn" onclick="emailCard()" title="Email this card"
               style="display:none;background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.4);border-radius:8px;padding:5px 12px;cursor:pointer;font-size:13px;color:#38bdf8;font-family:var(--mono);letter-spacing:.05em;white-space:nowrap;flex-shrink:0">
               🖨 Email Card
+            </button>
+            <button id="desktop-complete-btn" type="button" onclick="handleComplete()" title="Mark topic complete"
+              style="display:none;background:#34d399;border:1px solid transparent;border-radius:8px;padding:8px 12px;cursor:pointer;font-size:13px;color:#060b14;font-family:var(--mono);letter-spacing:.05em;white-space:nowrap;flex-shrink:0">
+              ✓ Mark Complete
             </button>
           </div>
           <div class="desktop-content-cat" id="desktop-content-cat">Category</div>
@@ -13714,8 +13892,8 @@ const contentMap = {
 
 
 // ═══════════════════════════════════════
-const SUPABASE_URL = 'https://uadyjsagkbikprlplkbn.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec';
+const SUPABASE_URL = 'https://kkgzrcumpnetxsaxscxz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrZ3pyY3VtcG5ldHhzYXhzY3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzc2NDcsImV4cCI6MjA5MjcxMzY0N30.b0cRpHB7kErduFT1fWien0An_wof9YZCpoViF3ashkQ';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ═══════════════════════════════════════
@@ -13784,9 +13962,9 @@ async function emailCard() {
     : (document.getElementById('modal-cat') ? document.getElementById('modal-cat').textContent : '');
   showToast('Sending to your email...');
   try {
-    const res = await fetch('https://uadyjsagkbikprlplkbn.supabase.co/functions/v1/send-email', {
+    const res = await fetch('https://kkgzrcumpnetxsaxscxz.supabase.co/functions/v1/send-email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrZ3pyY3VtcG5ldHhzYXhzY3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzc2NDcsImV4cCI6MjA5MjcxMzY0N30.b0cRpHB7kErduFT1fWien0An_wof9YZCpoViF3ashkQ' },
       body: JSON.stringify({ to: [currentUser.email], subject: 'ICU Core: ' + topicName, html: '<div style="font-family:sans-serif;max-width:700px;margin:0 auto;padding:24px;background:#ffffff"><div style="background:#ffffff;border-bottom:2px solid #e2e8f0;padding-bottom:16px;margin-bottom:16px"><div style="font-size:18px;font-weight:700;color:#000000">ICU <span style="color:#0284c7">Core</span></div><div style="font-size:11px;color:#555555;text-transform:uppercase;margin-top:4px">' + category + '</div><div style="font-size:22px;font-weight:700;margin-top:8px;color:#000000">' + topicName + '</div></div><div style="background:#ffffff;border-radius:8px;border:1px solid #e2e8f0;padding:24px">' + cardHTML + '</div></div>' })
     });
     if (res.ok) { showToast('Sent to ' + currentUser.email + ' âœ“'); }
@@ -14030,7 +14208,7 @@ function analyzeABG() {
 }
 
 async function initAuth() {
-  const _token = JSON.parse(localStorage.getItem('sb-uadyjsagkbikprlplkbn-auth-token'));
+  const _token = JSON.parse(localStorage.getItem('sb-kkgzrcumpnetxsaxscxz-auth-token'));
   const session = _token ? { user: { id: _token.user?.id || JSON.parse(atob(_token.access_token.split('.')[1])).sub, email: _token.user?.email } } : null;
   if (session?.user) {
     currentUser = session.user;
@@ -14051,6 +14229,7 @@ async function initAuth() {
     }
     hideLoginOverlay();
     updateUserBar();
+    // Handle highlight param from QCC reply notification
     handleHighlightParam();
   } else {
     showLoginOverlay();
@@ -14061,27 +14240,46 @@ function handleHighlightParam() {
   const params = new URLSearchParams(window.location.search);
   const topicName = params.get('highlight');
   if (!topicName) return;
+
+  // Find the sub-item that matches the topic name
   const items = document.querySelectorAll('.sub-item');
   let found = null;
   items.forEach(item => {
     const name = item.querySelector('.sub-name')?.textContent?.trim();
     if (name === topicName) found = item;
   });
+
   if (!found) return;
+
+  // Open the parent category
   const cat = found.closest('.category');
-  if (cat && !cat.classList.contains('open')) cat.classList.add('open');
+  if (cat && !cat.classList.contains('open')) {
+    cat.classList.add('open');
+  }
+
+  // Set currentCategoryData so back button works
   const catName = cat?.querySelector('.cat-name')?.textContent || '';
   const catIcon = cat?.querySelector('.cat-icon')?.textContent || '📋';
   const catMeta = cat?.querySelector('.cat-meta')?.textContent || '';
   currentCategoryData = { catEl: cat, icon: catIcon, name: catName, meta: catMeta };
+
+  // Scroll to the item
   setTimeout(() => {
     found.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Flash highlight
     found.style.transition = 'background 0.3s';
     found.style.background = 'rgba(34,211,165,0.2)';
     found.style.borderRadius = '6px';
-    setTimeout(() => { found.style.background = ''; }, 2500);
+    setTimeout(() => {
+      found.style.background = '';
+    }, 2500);
+
+    // Auto-open the topic card
     found.click();
   }, 600);
+
+  // Clean URL without reload
   window.history.replaceState({}, '', window.location.pathname);
 }
 
@@ -14262,6 +14460,126 @@ function updateTOCIndicators() {
   }
 }
 
+function getDrugNameFromCard(card) {
+  const titleEl = card.querySelector(':scope > div > div');
+  return titleEl ? titleEl.textContent.trim() : null;
+}
+
+function initializeDrugCards(category) {
+  const desktopContainer = document.getElementById('desktop-content-body');
+  const modalContainer = document.getElementById('modal-body');
+  const container = (desktopContainer && desktopContainer.querySelector('.drug-card'))
+    ? desktopContainer
+    : (modalContainer && modalContainer.querySelector('.drug-card'))
+      ? modalContainer
+      : modalContainer || desktopContainer;
+  if (!container) return;
+  container.querySelectorAll('.drug-card').forEach(card => {
+    const drugName = getDrugNameFromCard(card);
+    if (!drugName) return;
+    const detailPanel = card.querySelector('.drug-detail');
+    if (!detailPanel) return;
+
+    card.dataset.drugName = drugName;
+    const header = card.querySelector(':scope > div');
+    if (!header) return;
+
+    let dot = header.querySelector('.drug-complete-dot');
+    if (!dot) {
+      dot = document.createElement('span');
+      dot.className = 'drug-complete-dot';
+      header.appendChild(dot);
+    }
+
+    let prog = null;
+    if (currentProfile?.role === 'student') {
+      const progressKey = currentProfile.id + '|' + drugName;
+      prog = progressMap[progressKey];
+    } else if (currentProfile?.role === 'educator' || currentProfile?.role === 'admin') {
+      const progKey = Object.keys(progressMap).find(key =>
+        key.split('|')[1] === drugName && progressMap[key] && !progressMap[key].undone_by_educator
+      );
+      if (progKey) prog = progressMap[progKey];
+    }
+
+    const done = prog && !prog.undone_by_educator;
+    dot.style.background = done ? '#34d399' : '#2e4a65';
+    dot.style.boxShadow = done ? '0 0 0 4px rgba(52,211,153,0.16)' : 'none';
+    if (currentProfile?.role !== 'student' && done) {
+      dot.style.cursor = 'pointer';
+      dot.title = 'Click to undo drug completion for this student';
+      dot.onclick = async (e) => {
+        e.stopPropagation();
+        if (prog && confirm('Reset this drug completion? The student will need to re-read and mark it complete again.')) {
+          await undoComplete(prog.id, drugName);
+          initializeDrugCards(category);
+          updateTOCIndicators();
+          updateProgressCounter();
+        }
+      };
+    } else {
+      dot.style.cursor = 'default';
+      dot.title = '';
+      dot.onclick = null;
+    }
+
+    let btn = detailPanel.querySelector('.drug-complete-btn');
+    if (!btn) {
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'drug-complete-btn';
+      btn.style.marginTop = '10px';
+      detailPanel.appendChild(btn);
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        currentTopic = drugName;
+        currentCategory = category;
+        if (currentProfile?.role === 'student') {
+          await handleComplete();
+        } else if ((currentProfile?.role === 'educator' || currentProfile?.role === 'admin') && prog) {
+          await undoComplete(prog.id, drugName);
+        }
+        initializeDrugCards(category);
+        updateTOCIndicators();
+        updateProgressCounter();
+      });
+    }
+
+    if (currentProfile?.role === 'student') {
+      btn.style.display = '';
+      btn.textContent = done ? 'Completed' : '✓ Mark Complete';
+      btn.disabled = done;
+      btn.style.background = done ? '#065f46' : '#34d399';
+      btn.style.color = done ? '#34d399' : '#060b14';
+      btn.style.cursor = done ? 'default' : 'pointer';
+    } else if (currentProfile?.role === 'educator' || currentProfile?.role === 'admin') {
+      if (done) {
+        btn.style.display = '';
+        btn.textContent = '↩ Undo';
+        btn.disabled = false;
+        btn.style.background = 'rgba(251,146,60,.1)';
+        btn.style.color = '#fb923c';
+        btn.style.border = '1px solid rgba(251,146,60,.35)';
+        btn.style.cursor = 'pointer';
+      } else {
+        btn.style.display = 'none';
+      }
+    } else {
+      btn.style.display = 'none';
+    }
+
+    card.classList.toggle('drug-completed', done);
+
+    if (!header.dataset.drugInit) {
+      header.dataset.drugInit = 'true';
+      header.addEventListener('click', () => {
+        currentTopic = drugName;
+        currentCategory = category;
+      });
+    }
+  });
+}
+
 // ═══════════════════════════════════════
 // OPEN TOPIC MODAL
 // ═══════════════════════════════════════
@@ -14325,6 +14643,7 @@ function showCategoryGrid() {
   // Build topic cards from hidden sub-items
   const body = document.getElementById('cat-grid-body');
   body.innerHTML = '';
+  const isStudent = currentProfile?.role === 'student';
   catEl.querySelectorAll('.sub-item').forEach(item => {
     const topicName = item.querySelector('.sub-name')?.textContent || '';
     const onclick = item.getAttribute('onclick') || '';
@@ -14332,14 +14651,43 @@ function showCategoryGrid() {
     const statusEl = item.querySelector('.sub-status');
     const isDone = statusEl?.classList.contains('status-done');
     const statusText = statusEl?.textContent || '';
+    const progKey = currentProfile ? currentProfile.id + '|' + topicName : null;
+    const studentDone = currentProfile && currentProfile.role === 'student' && progressMap[progKey] && !progressMap[progKey].undone_by_educator;
 
     const card = document.createElement('div');
     card.className = 'grid-topic-card';
     card.innerHTML = `
-      <div class="grid-topic-dot" style="background:${dotColor}"></div>
-      <div class="grid-topic-name">${topicName}</div>
-      <span class="grid-topic-status ${isDone ? 'status-done' : 'status-soon'}">${statusText}</span>`;
-    card.setAttribute('onclick', onclick);
+      <div class="grid-topic-card-row">
+        <div class="grid-topic-dot" style="background:${dotColor}"></div>
+        <div class="grid-topic-name">${topicName}</div>
+        <span class="grid-topic-status ${isDone ? 'status-done' : 'status-soon'}">${statusText}</span>
+      </div>`;
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.grid-complete-btn')) return;
+      openTopic(topicName, name, icon);
+    });
+
+    if (isStudent) {
+      const completeBtn = document.createElement('button');
+      completeBtn.className = 'grid-complete-btn';
+      completeBtn.type = 'button';
+      completeBtn.textContent = studentDone ? 'Completed' : 'Mark Complete';
+      completeBtn.disabled = studentDone;
+      completeBtn.style.width = '100%';
+      completeBtn.style.marginTop = '4px';
+      completeBtn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        currentTopic = topicName;
+        currentCategory = name;
+        await handleComplete();
+        showCategoryGrid();
+      });
+      const footer = document.createElement('div');
+      footer.className = 'grid-topic-card-footer';
+      footer.appendChild(completeBtn);
+      card.appendChild(footer);
+    }
+
     body.appendChild(card);
   });
 
@@ -14375,10 +14723,25 @@ async function openTopic(name, category, icon) {
     document.getElementById('desktop-content-title').textContent = name;
     document.getElementById('desktop-content-cat').textContent = category;
     document.getElementById('desktop-content-body').innerHTML = htmlContent;
+    initializeDrugCards(category);
     updateUserBar();
     // Show email button next to title
     const emailBtn = document.getElementById('desktop-email-btn');
     if (emailBtn) emailBtn.style.display = 'inline-flex';
+    const desktopCompleteBtn = document.getElementById('desktop-complete-btn');
+    const hasDrugCards = !!document.querySelector('#desktop-content-body .drug-card, #modal-body .drug-card');
+    if (desktopCompleteBtn) {
+      const studentDone = currentProfile && currentProfile.role === 'student'
+        && progressMap[currentProfile.id + '|' + name]
+        && !progressMap[currentProfile.id + '|' + name].undone_by_educator;
+      if (currentProfile?.role === 'student' && !hasDrugCards) {
+        desktopCompleteBtn.style.display = 'inline-flex';
+        desktopCompleteBtn.disabled = studentDone;
+        desktopCompleteBtn.textContent = studentDone ? 'Completed' : '✓ Mark Complete';
+      } else {
+        desktopCompleteBtn.style.display = 'none';
+      }
+    }
 
     // Show topic view, hide others
     document.getElementById('content-welcome').style.display = 'none';
@@ -14395,6 +14758,7 @@ async function openTopic(name, category, icon) {
     document.getElementById('modal-cat').textContent = category;
     document.getElementById('modal-icon').textContent = icon;
     document.getElementById('modal-body').innerHTML = htmlContent;
+    initializeDrugCards(category);
     document.getElementById('modal').classList.add('open');
     document.body.style.overflow = 'hidden';
   }
@@ -14464,13 +14828,21 @@ async function renderInteractionState(name) {
     const key = currentProfile.id + '|' + name;
     const prog = progressMap[key];
     const btn = document.getElementById('complete-btn');
-    if (btn) {
-      if (prog && !prog.undone_by_educator) {
-        btn.style.background = '#065f46'; btn.style.color = '#34d399'; btn.style.cursor = 'default'; btn.disabled = true;
-        btn.innerHTML = '<span>✓ Completed</span>';
+    const hasDrugCards = !!document.querySelector('.drug-card');
+  if (btn) {
+      if (hasDrugCards) {
+        const completeSection = document.getElementById('complete-section');
+        if (completeSection) completeSection.style.display = 'none';
       } else {
-        btn.style.background = '#34d399'; btn.style.color = '#060b14'; btn.style.cursor = 'pointer'; btn.disabled = false;
-        btn.innerHTML = '<span id="complete-btn-inner">✓ Mark as Complete</span>';
+        if (btn) {
+          if (prog && !prog.undone_by_educator) {
+            btn.style.background = '#065f46'; btn.style.color = '#34d399'; btn.style.cursor = 'default'; btn.disabled = true;
+            btn.innerHTML = '<span>✓ Completed</span>';
+          } else {
+            btn.style.background = '#34d399'; btn.style.color = '#060b14'; btn.style.cursor = 'pointer'; btn.disabled = false;
+            btn.innerHTML = '<span id="complete-btn-inner">✓ Mark as Complete</span>';
+          }
+        }
       }
     }
     const qccEl = document.getElementById('qcc-history');
@@ -14667,30 +15039,171 @@ document.addEventListener('keydown', e => {
 // ── SEARCH ──
 const searchInput = document.getElementById('toc-search');
 const clearBtn = document.getElementById('search-clear-btn');
+const resultsMsg = document.getElementById('search-results-message');
+const resultsList = document.getElementById('search-results-list');
+let activeResultIndex = -1;
+let currentResults = [];
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function setSearchMessage(count, q) {
+  if (!resultsMsg) return;
+  if (!q) {
+    resultsMsg.textContent = '';
+    resultsMsg.style.display = 'none';
+    return;
+  }
+  resultsMsg.style.display = 'block';
+  if (count === 0) {
+    resultsMsg.textContent = 'No matching topics found.';
+  } else {
+    resultsMsg.textContent = `Showing ${count} result${count === 1 ? '' : 's'} for "${q}". Use arrows to select a topic, then Enter.`;
+  }
+}
+
+const topicSearchIndex = {};
+Object.keys(contentMap || {}).forEach(topicName => {
+  const html = contentMap[topicName] || '';
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+  topicSearchIndex[topicName] = (doc.body.textContent || '').trim().toLowerCase();
+});
+
+function topicMatchesQuery(topicName, q) {
+  return topicSearchIndex[topicName]?.includes(q);
+}
+
+function renderSearchResults(results) {
+  if (!resultsList) return;
+  currentResults = results;
+  activeResultIndex = -1;
+  if (!results.length) {
+    resultsList.innerHTML = '';
+    resultsList.classList.remove('visible');
+    resultsList.style.display = 'none';
+    return;
+  }
+  resultsList.style.display = 'block';
+  resultsList.classList.add('visible');
+  resultsList.innerHTML = results.map((result, index) =>
+    `<button type="button" class="search-result-item" data-index="${index}">
+       <span class="result-name">${escapeHtml(result.name)}</span>
+       <span class="result-cat">${escapeHtml(result.category)}</span>
+     </button>`
+  ).join('');
+  resultsList.querySelectorAll('.search-result-item').forEach(button => {
+    button.addEventListener('click', () => {
+      const index = Number(button.dataset.index);
+      if (currentResults[index]) {
+        currentResults[index].node.click();
+        renderSearchResults([]);
+      }
+    });
+  });
+}
 
 function clearSearch() {
   searchInput.value = '';
   clearBtn.classList.remove('visible');
+  setSearchMessage(0, '');
+  renderSearchResults([]);
+  if (resultsList) {
+    resultsList.classList.remove('visible');
+    resultsList.style.display = 'none';
+  }
+  if (resultsMsg) {
+    resultsMsg.style.display = 'none';
+  }
+  activeResultIndex = -1;
+  currentResults = [];
   document.querySelectorAll('.category').forEach(cat => {
-    cat.querySelectorAll('.sub-item').forEach(item => item.classList.remove('hidden'));
+    cat.querySelectorAll('.sub-item').forEach(item => {
+      item.classList.remove('hidden');
+      item.classList.remove('search-match');
+    });
     cat.classList.remove('hidden');
+    cat.classList.remove('open');
   });
 }
 
 searchInput.addEventListener('input', function() {
   const q = this.value.trim().toLowerCase();
   clearBtn.classList.toggle('visible', q.length > 0);
+  let matchCount = 0;
+  const results = [];
   document.querySelectorAll('.category').forEach(cat => {
+    const catEl = cat.querySelector('.cat-name');
+    const catName = catEl ? catEl.textContent.trim().toLowerCase() : '';
+    const catMatch = q && catName.includes(q);
     let anyVisible = false;
     cat.querySelectorAll('.sub-item').forEach(item => {
-      const name = item.querySelector('.sub-name').textContent.toLowerCase();
-      const match = !q || name.includes(q);
+      const nameEl = item.querySelector('.sub-name');
+      const name = nameEl ? nameEl.textContent.trim().toLowerCase() : '';
+      const onclickAttr = item.getAttribute('onclick') || '';
+      const topicNameMatch = onclickAttr.match(/openTopic\('([^']+)'/);
+      const topicName = topicNameMatch ? topicNameMatch[1] : (nameEl ? nameEl.textContent.trim() : '');
+      const contentMatch = q && topicMatchesQuery(topicName, q);
+      const match = q ? (catMatch || name.includes(q) || contentMatch) : true;
       item.classList.toggle('hidden', !match);
-      if (match) anyVisible = true;
+      item.classList.toggle('search-match', match && q);
+      if (match) {
+        anyVisible = true;
+        matchCount += 1;
+        if (q) {
+          results.push({ node: item, name: nameEl ? nameEl.textContent.trim() : '', category: catEl ? catEl.textContent.trim() : '' });
+        }
+      } else {
+        item.classList.remove('search-match');
+      }
     });
-    if (q) { cat.classList.toggle('hidden', !anyVisible); if (anyVisible) cat.classList.add('open'); }
-    else { cat.classList.remove('hidden'); }
+    if (q) {
+      cat.classList.toggle('hidden', !anyVisible);
+      if (anyVisible) cat.classList.add('open');
+    } else {
+      cat.classList.remove('hidden');
+      cat.classList.remove('open');
+    }
   });
+  setSearchMessage(matchCount, q);
+  renderSearchResults(results);
+});
+
+function updateActiveResult(index) {
+  if (!resultsList) return;
+  const items = Array.from(resultsList.querySelectorAll('.search-result-item'));
+  if (!items.length) return;
+  items.forEach(item => item.classList.remove('active'));
+  if (index < 0 || index >= items.length) {
+    activeResultIndex = -1;
+    return;
+  }
+  activeResultIndex = index;
+  items[index].classList.add('active');
+  items[index].scrollIntoView({ block: 'nearest' });
+}
+
+searchInput.addEventListener('keydown', function(e) {
+  const items = resultsList ? Array.from(resultsList.querySelectorAll('.search-result-item')) : [];
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    updateActiveResult(Math.min(activeResultIndex + 1, items.length - 1));
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    updateActiveResult(Math.max(activeResultIndex - 1, 0));
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (activeResultIndex >= 0 && currentResults[activeResultIndex]) {
+      currentResults[activeResultIndex].node.click();
+    } else {
+      const firstMatch = document.querySelector('.sub-item.search-match');
+      if (firstMatch) {
+        firstMatch.click();
+      }
+    }
+  }
 });
 
 // ── PROGRESS COUNTER ──
@@ -14716,6 +15229,5 @@ initAuth();
 buildDesktopSidebar();
 </script>
 
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"d97a0c383b874713b827d237fcff33e0","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
