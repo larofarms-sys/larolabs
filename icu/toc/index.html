@@ -13892,8 +13892,8 @@ const contentMap = {
 
 
 // ═══════════════════════════════════════
-const SUPABASE_URL = 'https://kkgzrcumpnetxsaxscxz.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrZ3pyY3VtcG5ldHhzYXhzY3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzc2NDcsImV4cCI6MjA5MjcxMzY0N30.b0cRpHB7kErduFT1fWien0An_wof9YZCpoViF3ashkQ';
+const SUPABASE_URL = 'https://uadyjsagkbikprlplkbn.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ═══════════════════════════════════════
@@ -13962,9 +13962,9 @@ async function emailCard() {
     : (document.getElementById('modal-cat') ? document.getElementById('modal-cat').textContent : '');
   showToast('Sending to your email...');
   try {
-    const res = await fetch('https://kkgzrcumpnetxsaxscxz.supabase.co/functions/v1/send-email', {
+    const res = await fetch('https://uadyjsagkbikprlplkbn.supabase.co/functions/v1/send-email', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtrZ3pyY3VtcG5ldHhzYXhzY3h6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxMzc2NDcsImV4cCI6MjA5MjcxMzY0N30.b0cRpHB7kErduFT1fWien0An_wof9YZCpoViF3ashkQ' },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhZHlqc2Fna2Jpa3BybHBsa2JuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3MjkzMzYsImV4cCI6MjA5MjMwNTMzNn0.ByQio1S5Lb-c4BUSGyVd8uQe8UUhSGJ5HZvBkSO3Dec' },
       body: JSON.stringify({ to: [currentUser.email], subject: 'ICU Core: ' + topicName, html: '<div style="font-family:sans-serif;max-width:700px;margin:0 auto;padding:24px;background:#ffffff"><div style="background:#ffffff;border-bottom:2px solid #e2e8f0;padding-bottom:16px;margin-bottom:16px"><div style="font-size:18px;font-weight:700;color:#000000">ICU <span style="color:#0284c7">Core</span></div><div style="font-size:11px;color:#555555;text-transform:uppercase;margin-top:4px">' + category + '</div><div style="font-size:22px;font-weight:700;margin-top:8px;color:#000000">' + topicName + '</div></div><div style="background:#ffffff;border-radius:8px;border:1px solid #e2e8f0;padding:24px">' + cardHTML + '</div></div>' })
     });
     if (res.ok) { showToast('Sent to ' + currentUser.email + ' âœ“'); }
@@ -14208,7 +14208,7 @@ function analyzeABG() {
 }
 
 async function initAuth() {
-  const _token = JSON.parse(localStorage.getItem('sb-kkgzrcumpnetxsaxscxz-auth-token'));
+  const _token = JSON.parse(localStorage.getItem('sb-uadyjsagkbikprlplkbn-auth-token'));
   const session = _token ? { user: { id: _token.user?.id || JSON.parse(atob(_token.access_token.split('.')[1])).sub, email: _token.user?.email } } : null;
   if (session?.user) {
     currentUser = session.user;
@@ -14647,11 +14647,14 @@ function showCategoryGrid() {
   catEl.querySelectorAll('.sub-item').forEach(item => {
     const topicName = item.querySelector('.sub-name')?.textContent || '';
     const onclick = item.getAttribute('onclick') || '';
+    // Extract the actual contentMap key from the onclick attribute (first arg of openTopic)
+    const topicKeyMatch = onclick.match(/openTopic\('([^']+)'/);
+    const topicKey = topicKeyMatch ? topicKeyMatch[1] : topicName;
     const dotColor = item.querySelector('.sub-dot')?.style.background || '#6b8fae';
     const statusEl = item.querySelector('.sub-status');
     const isDone = statusEl?.classList.contains('status-done');
     const statusText = statusEl?.textContent || '';
-    const progKey = currentProfile ? currentProfile.id + '|' + topicName : null;
+    const progKey = currentProfile ? currentProfile.id + '|' + topicKey : null;
     const studentDone = currentProfile && currentProfile.role === 'student' && progressMap[progKey] && !progressMap[progKey].undone_by_educator;
 
     const card = document.createElement('div');
@@ -14664,7 +14667,7 @@ function showCategoryGrid() {
       </div>`;
     card.addEventListener('click', (e) => {
       if (e.target.closest('.grid-complete-btn')) return;
-      openTopic(topicName, name, icon);
+      openTopic(topicKey, name, icon);
     });
 
     if (isStudent) {
@@ -14677,7 +14680,7 @@ function showCategoryGrid() {
       completeBtn.style.marginTop = '4px';
       completeBtn.addEventListener('click', async (e) => {
         e.stopPropagation();
-        currentTopic = topicName;
+        currentTopic = topicKey;
         currentCategory = name;
         await handleComplete();
         showCategoryGrid();
